@@ -1,0 +1,33 @@
+{
+  "name": "orolyn/orolyn",
+  "description": "Orolyn PHP Library",
+  "type": "library",
+  "require": {
+    "php-64bit": "^8.1",
+    "ext-eio": "*",
+    "ext-ds": "*",
+    "ext-sockets": "*",
+    "ext-pcntl": "*",
+    "ext-zlib": "*",
+    "symfony/console": "^5.0",
+    "symfony/process": "^5.0",
+    "psr/http-message": "^1.0"
+  },
+  "license": "GPL-3.0",
+  "authors": [
+    {
+      "name": "Dominic Grostate",
+      "email": "codekestrel@googlemail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Orolyn\\": "src/",
+      "Orolyn\\Tests\\": "tests/"
+    },
+    "files": ["autoload.php"]
+  },
+  "require-dev": {
+    "vimeo/psalm": "^4.15"
+  }
+}
