@@ -4,6 +4,7 @@ namespace Orolyn\Net\Http;
 
 use Orolyn\Endian;
 use Orolyn\FormatException;
+use Orolyn\InvalidOperationException;
 use Orolyn\IO\ByteStream;
 use Orolyn\Net\Http\Parser\Parser;
 use Orolyn\Net\ServerEndPoint;
@@ -38,10 +39,11 @@ class HttpServer
      */
     public function accept(): ?HttpRequestContext
     {
-        if (null === $this->server || null === $socket = $this->server->accept()) {
-            return null;
+        if (null === $this->server) {
+            throw new InvalidOperationException('Http server is not configured for listening');
         }
 
+        $socket = $this->server->accept();
         $socket->setEndian(Endian::BigEndian);
 
         try {

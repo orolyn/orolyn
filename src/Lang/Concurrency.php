@@ -89,7 +89,7 @@ function Suspend(float $delay = 0): void
  */
 function Lock(?TaskLock &$lock, ?callable $func = null): mixed
 {
-    return TaskScheduler::getTaskScheduler()->lock($lock);
+    return TaskScheduler::getTaskScheduler()->lock($lock, $func);
 }
 
 /**

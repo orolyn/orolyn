@@ -9,6 +9,7 @@ use Orolyn\Net\ServerEndPoint;
 use Orolyn\Net\Sockets\Options\ServerSocketOptions;
 use Orolyn\Net\Sockets\Options\SocketOptions;
 use Orolyn\Net\UnixEndPoint;
+use function Orolyn\Lang\Suspend;
 
 class ServerSocket
 {
@@ -84,12 +85,16 @@ class ServerSocket
             return null;
         }
 
-        $sR = [$this->handle];
-        $sW = null;
-        $sE = null;
+        for (;;) {
+            $sR = [$this->handle];
+            $sW = null;
+            $sE = null;
 
-        if (0 === stream_select($sR, $sW, $sE, 0)) {
-            return null;
+            if (0 !== stream_select($sR, $sW, $sE, 0)) {
+                break;
+            }
+
+            Suspend();
         }
 
         if ($handle = stream_socket_accept($this->handle)) {

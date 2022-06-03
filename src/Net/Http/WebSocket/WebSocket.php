@@ -2,6 +2,7 @@
 
 namespace Orolyn\Net\Http\WebSocket;
 
+use Orolyn\Collection\ArrayList;
 use Orolyn\Collection\EmptyList;
 use Orolyn\Collection\IList;
 use Orolyn\Collection\OrderedSet;
@@ -54,6 +55,7 @@ class WebSocket
             $request->getHeader('Sec-WebSocket-Extensions'),
             $supportedExtensions
         );
+        $extensions = new ArrayList();
 
         $response = new HttpResponse(null, 101, [], '1.1');
         $response->setHeader('Upgrade', 'websocket');

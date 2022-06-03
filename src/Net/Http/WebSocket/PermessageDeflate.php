@@ -197,6 +197,8 @@ class PermessageDeflate extends Extension
             );
         }
 
+        var_dump($bytes);
+
         return inflate_add($this->inflator, $bytes);
     }
 }

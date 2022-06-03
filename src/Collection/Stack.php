@@ -26,7 +26,7 @@ class Stack implements ICollection
 
     public function peek(): mixed
     {
-        $this->source->peek();
+        return $this->source->peek();
     }
 
     public function push(mixed $item): void

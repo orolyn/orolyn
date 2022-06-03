@@ -10,7 +10,7 @@ class WebSocketMessage
      */
     public function __construct(
         private string $data,
-        private bool $utf8
+        private bool $utf8 = true
     ) {
     }
 
