@@ -197,7 +197,7 @@ class PermessageDeflate extends Extension
             );
         }
 
-        var_dump($bytes);
+        // TODO: something is very broken here. Consecutive reads fail.
 
         return inflate_add($this->inflator, $bytes);
     }

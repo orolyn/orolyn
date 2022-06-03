@@ -17,3 +17,15 @@ Requirements
 - Linux operating system
 - 64bit OS
 - PHP 8.1+
+
+Todo
+----
+
+- Fix permessage-deflate
+- Tidy up helper functions
+- Maybe make privitive types singletons
+- Fill out collection library
+- Find an alternative to EIO
+- Remove or fill out the security library
+- Rebuild the binary formatter
+- Add tests for Net and Concurrency
