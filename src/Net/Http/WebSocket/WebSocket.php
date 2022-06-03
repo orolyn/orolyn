@@ -104,6 +104,7 @@ class WebSocket
      * @param string|WebSocketMessage $message
      * @param bool $utf8
      * @return void
+     * @throws WebSocketClosedException
      */
     public function send(string|WebSocketMessage $message, bool $utf8 = false): void
     {
@@ -160,6 +161,12 @@ class WebSocket
         });
     }
 
+    /**
+     * @param string $data
+     * @param float $timeout
+     * @return bool
+     * @throws WebSocketClosedException
+     */
     public function ping(string $data, float $timeout = 0): bool
     {
         return Lock($this->pingLock, function () use ($data, $timeout) {
@@ -195,7 +202,13 @@ class WebSocket
     {
         $frame = Frame::create($opcode, $message, $isFinal, $this->extensions);
         Frame::streamSend($frame, $this->socket);
-        $this->socket->flush();
+
+        try {
+            $this->socket->flush();
+        } catch (SocketNotConnectedException $exception) {
+            throw new WebSocketClosedException();
+        }
+
     }
 
     /**
