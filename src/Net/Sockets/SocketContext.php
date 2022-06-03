@@ -9,8 +9,14 @@ use function Orolyn\Lang\ClassInstanceOf;
 
 class SocketContext
 {
+    /**
+     * @var Dictionary
+     */
     private Dictionary $options;
 
+    /**
+     * @param Options ...$optionsList
+     */
     public function __construct(Options ...$optionsList)
     {
         $this->options = new Dictionary();

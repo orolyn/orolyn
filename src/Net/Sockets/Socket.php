@@ -38,7 +38,7 @@ class Socket implements IInputStream, IOutputStream
     private Buffer $oBuf;
 
     /**
-     * @param SocketContext|null $socketOptions
+     * @param SocketContext|null $context
      */
     public function __construct(?SocketContext $context = null)
     {
@@ -82,8 +82,8 @@ class Socket implements IInputStream, IOutputStream
      * @param int $timeout
      * @param bool $throwException
      * @return bool
-     * @throws ArgumentOutOfRangeException
      * @throws SocketConnectionTimeoutException
+     * @throws SocketException
      */
     private function tryConnectToEndPoint(IPEndPoint|UnixEndPoint $endPoint, int $timeout, bool $throwException): bool
     {
@@ -126,6 +126,13 @@ class Socket implements IInputStream, IOutputStream
         return true;
     }
 
+    /**
+     * Internally called by ServerSocket
+     *
+     * @param $handle
+     * @return void
+     * @throws SocketException
+     */
     protected function initialize($handle): void
     {
         $this->handle = $handle;
@@ -145,7 +152,7 @@ class Socket implements IInputStream, IOutputStream
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
     public function isEndOfStream(): bool
     {
@@ -153,8 +160,8 @@ class Socket implements IInputStream, IOutputStream
     }
 
     /**
-     * @param int $length
-     * @return string
+     * {@inheritDoc}
+     *
      * @throws SocketException
      * @throws SocketNotConnectedException
      */
@@ -176,8 +183,8 @@ class Socket implements IInputStream, IOutputStream
     }
 
     /**
-     * @param int $length
-     * @return string|null
+     * {@inheritDoc}
+     *
      * @throws SocketException
      * @throws SocketNotConnectedException
      */
@@ -276,7 +283,8 @@ class Socket implements IInputStream, IOutputStream
     }
 
     /**
-     * @param string $bytes
+     * {@inheritDoc}
+     *
      * @throws SocketNotConnectedException
      */
     public function write(string $bytes): void
