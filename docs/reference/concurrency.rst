@@ -1,6 +1,6 @@
-================================
-Concurrent Synchronous Operation
-================================
+=====================
+Concurrent Operations
+=====================
 
 The Orolyn library uses fibers as its sole means of performing concurrent operations. This is represented in the
 form of tasks, and the functionality is exposed by a group of functions which interfaces with the `TaskScheduler`.
@@ -74,6 +74,7 @@ Here is an example of running more than one tasks at once:
         )
     );
 
+
 .. code-block:: text
     :caption: Output
 
@@ -82,7 +83,12 @@ Here is an example of running more than one tasks at once:
     string(22) "Human: Goodbye, World!"
     string(22) "World: Goodbye, Human!"
 
-We can see that the loop alternatives between the closures on suspend.
+.. note::
+
+    As of writing, nested `Await` calls will block all other asynchronous tasks when used outside of a task scheduler
+    managed application. Solution coming soon.
+
+We can see that the loop alternates between the closures on suspend.
 
 So, these have been simple examples, however as mentioned, the rest of this library has been designed to perform
 synchronous-like operations in such as way so to release control of the current stack when they hit an IO block. For
@@ -102,7 +108,7 @@ Here we will make 20 consecutive calls to Stackoverflow. Firstly, the setup func
     EOF;
 
         $socket = new Socket();
-        $socket->connect(new DnsEndPoint('google.com', 80));
+        $socket->connect(new DnsEndPoint($domain, 80));
         $socket->write($request);
         $socket->flush();
 
@@ -155,8 +161,13 @@ And the time now is much shorter:
 .. code-block:: text
     :caption: Output
 
-    float(0.04011201858520508)
+    float(0.04282999038696289)
 
 Essentially what this provides is a way to communicate with multiple sockets concurrently and without callbacks.
 Because, the connection, writing, the checking of connection status, and the reading are performed internally with
 polls which suspend execution of the current task.
+
+.. note::
+
+    This precise example may yield connection errors because we are sending so many requests to Stackoverflow at once.
+    Sorry!
