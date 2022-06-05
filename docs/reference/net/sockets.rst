@@ -15,7 +15,7 @@ Making a connection
 Connection with sockets are performed by providing the necessary endpoint. For example to connect to an IP address
 we can use the following example.
 
-Create a netcat servers with port `9999`:
+Create a netcat server with port `9999`:
 
 .. code-block:: bash
 

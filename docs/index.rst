@@ -14,3 +14,4 @@ Developer Guide
     reference/net/sockets
     reference/net/http-server
     reference/net/websockets
+    reference/net/resolving-dns-names
