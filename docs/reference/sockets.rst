@@ -120,3 +120,8 @@ documentation on the `DnsResolver <dns.rst>`_.
     The document has moved
     <A HREF="http://www.google.com/">here</A>.
     </BODY></HTML>
+
+Concurrency
+===========
+
+Guides on concurrency with sockets

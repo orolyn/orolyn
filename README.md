@@ -30,3 +30,4 @@ Todo
 - Remove unneeded dependencies
 - Switch the base implementation for datagram sockets
 - Really need some kind of central stdio class
+- See if it's possible for `Await` to give way to other tasks outside the current chain.

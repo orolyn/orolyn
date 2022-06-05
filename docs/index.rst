@@ -11,7 +11,8 @@ Developer Guide
     :maxdepth: 3
 
     reference/overview
+    reference/concurrency
     reference/sockets
     reference/http-server
     reference/websockets
-    reference/resolving-dns-names
+    reference/resolving-domain-names
