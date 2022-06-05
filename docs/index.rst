@@ -7,4 +7,7 @@ Orolyn Documentation
 Developer Guide
 ===============
 
-.. contents::
+.. toctree::
+    :maxdepth: 3
+
+    reference/overview
