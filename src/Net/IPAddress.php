@@ -36,7 +36,10 @@ final class IPAddress
         return $value instanceof IPAddress && $value->value === $this->value;
     }
 
-    public function __toString(): string
+    /**
+     * @return string
+     */
+    public function toString(): string
     {
         return String('%s.%s.%s.%s')->format(
             UnsignedInt8($this->value >> 24),
@@ -44,5 +47,10 @@ final class IPAddress
             UnsignedInt8($this->value >> 8),
             UnsignedInt8($this->value)
         );
+    }
+
+    public function __toString(): string
+    {
+        return $this->toString();
     }
 }

@@ -2,6 +2,13 @@
 Sockets
 =======
 
+The sockets components provides a simple interface for making TCP connections. The `Socket` class is itself a stream
+implementing `IInputStream` and `IOutputStream` allowing for varying data types to be written to and read from the
+connection.
+
+Like with all Orolyn IO interfaces, calls to the socket's IO bound APIs block execution, but release control of the
+current task when executed within a concurrent environment.
+
 Making a connection
 ===================
 
@@ -21,14 +28,15 @@ Create a netcat servers with port `9999`:
     use Orolyn\Net\IPEndPoint;
     use Orolyn\Net\Sockets\Socket;
 
-    require_once 'vendor/autoload.php';
-
     $socket = new Socket();
     $socket->connect(new IPEndPoint(IPAddress::parse('0.0.0.0'), 9999));
 
     $socket->write("Hello, World!\n");
 
 In this example we can also use the `StreamWriter`:
+
+.. code-block:: php
+    :name: sockets.php
 
     use Orolyn\IO\StreamWriter;
 
@@ -39,26 +47,25 @@ In this example we can also use the `StreamWriter`:
 Example:
 
 .. code-block:: bash
-    :caption: Server Terminal
+    :caption: Server terminal
 
     netcat -k -l 0.0.0.0 9999
 
-Output:
-
-.. code-block:: text
-
-    Hello, World!
-
 .. code-block:: bash
-    :caption: Client Terminal
+    :caption: Client terminal
 
     php sockets.php
 
-Connecting via domain name
+.. code-block:: text
+    :caption: Server output
+
+    Hello, World!
+Reading data from a socket
 --------------------------
 
-We can also connect via a domain name. Here is a simple example of connecting to an HTTP server and making a simple
-HTTP transaction:
+We can also read data from the socket. Here is an example of connecting to an HTTP server and making a simple HTTP
+transaction. For this example we are connecting via a DNS endpoint. To learn more about resolving domain names see
+documentation on the `DnsResolver <dns.rst>`_.
 
 .. code-block:: php
     :name: domain-connect.php
@@ -89,13 +96,12 @@ HTTP transaction:
     echo $response;
 
 .. code-block:: bash
-    :caption: Client Terminal
+    :caption: Client terminal
 
     php domain-connect.php
 
-Output:
-
 .. code-block:: text
+    :caption: Output
 
     HTTP/1.0 301 Moved Permanently
     Location: http://www.google.com/

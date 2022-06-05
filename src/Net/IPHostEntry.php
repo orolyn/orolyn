@@ -25,4 +25,18 @@ final class IPHostEntry
     {
         return $this->addressList;
     }
+
+    /**
+     * Returns the first IPAddress if this entry contains any addresses.
+     *
+     * @return IPAddress|null
+     */
+    public function getAddress(): ?IPAddress
+    {
+        if ($this->addressList->isEmpty()) {
+            return null;
+        }
+
+        return $this->addressList[0];
+    }
 }
