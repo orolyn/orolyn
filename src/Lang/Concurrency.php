@@ -40,7 +40,7 @@ function Await(callable|iterable|Task ...$tasks): void
             foreach ($task as $thisTask) {
                 if (is_callable($thisTask)) {
                     $task = new Task($thisTask);
-                } elseif (!$task instanceof Task) {
+                } elseif (!$thisTask instanceof Task) {
                     throw new ArgumentException('Iterable collection must only contain tasks or callables.');
                 }
 

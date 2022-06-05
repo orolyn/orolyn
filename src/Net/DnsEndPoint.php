@@ -28,6 +28,15 @@ final class DnsEndPoint extends EndPoint
 
     public function __toString(): string
     {
-        return String('%s:%s')->format($this->address, $this->port);
+        return String('%s:%s')->format($this->host, $this->port);
+    }
+
+    /**
+     * @param DnsEndPoint $endPoint
+     * @return bool
+     */
+    public function equals(DnsEndPoint $endPoint): bool
+    {
+        return $endPoint->host === $this->host && $endPoint->port === $this->port;
     }
 }
