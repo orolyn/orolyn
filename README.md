@@ -21,15 +21,12 @@ Requirements
 Todo
 ----
 
-- Fix permessage-deflate
 - Tidy up helper functions
-- Maybe make privitive types singletons
+- Maybe make primitive types singletons
 - Fill out collection library
 - Find an alternative to EIO
-- Remove or fill out the security library
 - Rebuild the binary formatter
 - Add tests for Net and Concurrency
-- Figure out why the web socket server takes ages to exit
 - Remove unneeded dependencies
 - Switch the base implementation for datagram sockets
 - Really need some kind of central stdio class
