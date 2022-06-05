@@ -1,6 +1,6 @@
-=======
-Sockets
-=======
+=============
+Using Sockets
+=============
 
 The sockets components provides a simple interface for making TCP connections. The `Socket` class is itself a stream
 implementing `IInputStream` and `IOutputStream` allowing for varying data types to be written to and read from the

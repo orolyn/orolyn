@@ -11,7 +11,7 @@ Developer Guide
     :maxdepth: 3
 
     reference/overview
-    reference/net/sockets
-    reference/net/http-server
-    reference/net/websockets
-    reference/net/resolving-dns-names
+    reference/sockets
+    reference/http-server
+    reference/websockets
+    reference/resolving-dns-names
