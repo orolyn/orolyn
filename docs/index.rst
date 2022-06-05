@@ -10,4 +10,7 @@ Developer Guide
 .. toctree::
     :maxdepth: 3
 
-    reference/net/overview
+    reference/overview
+    reference/net/sockets
+    reference/net/http-server
+    reference/net/websockets
