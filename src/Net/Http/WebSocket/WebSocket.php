@@ -94,6 +94,14 @@ class WebSocket
     }
 
     /**
+     * @return void
+     */
+    public function close(): void
+    {
+        $this->socket->close();
+    }
+
+    /**
      * Return true if the connection is closed.
      *
      * @return bool
