@@ -15,7 +15,7 @@ Requirements
 Installation
 ============
 
-Use `Composer <https://getcomposer.org>_` to install this package.
+Use `Composer <https://getcomposer.org>`_ to install this package.
 
 .. code-block:: bash
 
@@ -37,6 +37,6 @@ To use without composer, you will need require the autoload.php file:
 License
 =======
 
-This library uses the `GNU General Public License 3.0 <https://www.gnu.org/licenses/gpl-3.0.en.html>`
+This library uses the `GNU General Public License 3.0 <https://www.gnu.org/licenses/gpl-3.0.en.html>`_
 
 

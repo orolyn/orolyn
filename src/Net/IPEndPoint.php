@@ -54,4 +54,13 @@ final class IPEndPoint extends EndPoint implements ServerEndPoint
     {
         return String('%s:%s')->format($this->address, $this->port);
     }
+
+    /**
+     * @param IpEndPoint $endPoint
+     * @return bool
+     */
+    public function equals(IpEndPoint $endPoint): bool
+    {
+        return $endPoint->address->equals($endPoint->address) && $endPoint->port === $this->port;
+    }
 }

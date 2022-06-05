@@ -36,11 +36,6 @@ final class IPAddress
         return $value instanceof IPAddress && $value->value === $this->value;
     }
 
-    public function getHashCode(): int
-    {
-        return $this->value;
-    }
-
     public function __toString(): string
     {
         return String('%s.%s.%s.%s')->format(

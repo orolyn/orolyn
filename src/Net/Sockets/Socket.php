@@ -56,7 +56,7 @@ class Socket implements IInputStream, IOutputStream
     public function connect(EndPoint $endPoint, ?int $timeout = null): void
     {
         $this->endPoint = $endPoint;
-        $timeout = $timeout ?? ini_get('default_socket_timeout');
+        $timeout = $timeout ?? (ini_get('default_socket_timeout') * 1000);
 
         if ($endPoint instanceof DnsEndPoint) {
             $entry = DnsResolver::lookup($endPoint->getHost());
@@ -107,7 +107,7 @@ class Socket implements IInputStream, IOutputStream
 
         $timer = $timeout > 0 ? new Timer($timeout) : null;
 
-        while ((0 === $select = $this->select(self::SELECT_W)) && (!$timer || !$timer->isExpired())) {
+        while ((0 === $select = $this->select($handle, self::SELECT_W)) && (!$timer || !$timer->isExpired())) {
             Suspend();
         }
 
@@ -395,10 +395,10 @@ class Socket implements IInputStream, IOutputStream
         throw new SocketException($message);
     }
 
-    private function select(int $flags): int|bool
+    private function select($handle, int $flags): int|bool
     {
-        $sR = $flags & self::SELECT_R ? [$this->handle] : null;
-        $sW = $flags & self::SELECT_W ? [$this->handle] : null;
+        $sR = $flags & self::SELECT_R ? [$handle] : null;
+        $sW = $flags & self::SELECT_W ? [$handle] : null;
         $sE = null;
 
         if (false === $select = stream_select($sR, $sW, $sE, 0)) {

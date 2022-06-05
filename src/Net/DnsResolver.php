@@ -3,14 +3,13 @@ namespace Orolyn\Net;
 
 use Orolyn\Collection\ArrayList;
 use Orolyn\Endian;
-use Orolyn\Event\EventDispatcher;
 use Orolyn\Net\Sockets\DatagramPacket;
 use Orolyn\Net\Sockets\DatagramSocket;
 use function Orolyn\Lang\String;
 use function Orolyn\Lang\UnsignedInt16;
 use Orolyn\Primitive\TypeString;
 
-class DnsResolver extends EventDispatcher
+class DnsResolver
 {
     public const TYPE_A = 1;
     public const TYPE_NS = 2;
@@ -107,12 +106,14 @@ class DnsResolver extends EventDispatcher
 
         $ipHostEntry = null;
 
-        if ($ans->getLength() > 0) {
-            $ipHostEntry = new IPHostEntry($host);
+        if ($ans->count() > 0) {
+            $addressList = new ArrayList();
 
             foreach ($ans as $answer) {
-                $ipHostEntry->getAddressList()->add($answer->rdata);
+                $addressList[] = $answer->rdata;
             }
+
+            $ipHostEntry = new IPHostEntry($host, $addressList);
         }
 
         $socket->close();
@@ -135,7 +136,7 @@ class DnsResolver extends EventDispatcher
             $question->type  = $packet->readUnsignedInt16();
             $question->class = $packet->readUnsignedInt16();
 
-            $questions->add($question);
+            $questions[] = $question;
         }
 
         return $questions;
@@ -181,7 +182,7 @@ class DnsResolver extends EventDispatcher
                     $record->rdata = $packet->read($rdLength);
             }
 
-            $records->add($record);
+            $records[] = $record;
         }
 
         return $records;
@@ -205,14 +206,14 @@ class DnsResolver extends EventDispatcher
                 $packet->setPosition($offset);
 
                 foreach (self::parseLabels($packet) as $label) {
-                    $labels->add($label);
+                    $labels[] = $label;
                 }
                 $packet->setPosition($position);
 
                 break;
             } else {
                 $packet->setPosition($packet->getPosition() - 2);
-                $labels->add($packet->read($packet->readUnsignedInt8()));
+                $labels[] = $packet->read($packet->readUnsignedInt8());
             }
         }
 

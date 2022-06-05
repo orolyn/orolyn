@@ -1,6 +1,8 @@
 <?php
 namespace Orolyn\IO;
 
+use Closure;
+
 class StreamWriter
 {
     public function __construct(
