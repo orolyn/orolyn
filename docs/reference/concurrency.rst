@@ -13,7 +13,8 @@ or polling.
 Part of this is achieved by designing the provided IO components in such a way so to hide the polling operations, and
 secondly by employing a task scheduler which loops over fibers.
 
-For example:
+Creating an asynchronous task
+=============================
 
 .. code-block:: php
 
@@ -53,6 +54,9 @@ So calling `Async` will execute the closure up until it hits the first `Suspend`
 `->getResult` will continue the closure until completion, or a call to `->resume` will continue until the next
 `suspend`.
 
+Running multiple asynchronous tasks
+===================================
+
 Here is an example of running more than one tasks at once:
 
 .. code-block:: php
@@ -89,6 +93,9 @@ Here is an example of running more than one tasks at once:
     managed application. Solution coming soon.
 
 We can see that the loop alternates between the closures on suspend.
+
+Using asynchronous tasks for IO operations
+==========================================
 
 So, these have been simple examples, however as mentioned, the rest of this library has been designed to perform
 synchronous-like operations in such as way so to release control of the current stack when they hit an IO block. For
