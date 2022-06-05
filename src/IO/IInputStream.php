@@ -69,19 +69,13 @@ interface IInputStream
 
     /**
      * Reads specified length of bytes from the stream.
-     * If the buffer does not contain enough bytes to fill the length, then this method will block until the require
+     * If the buffer does not contain enough bytes to fill the length, then this method will block until the required
      * bytes become available.
-     *
-     * If the stream is closed during this call then this method will return the request bytes from the buffer if
-     * there are enough, however if there are insufficient bytes available, then the remainder of the buffer will
-     * be returned instead.
-     *
-     * If the stream is already closed and the buffer is empty, this method will throw an exception.
      *
      * @param int $length
      * @return string
      */
-    public function read(int $length = 1): ?string;
+    public function read(int $length = 1): string;
 
     /**
      * Read a single 8 bit integer.

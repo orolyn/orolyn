@@ -67,14 +67,17 @@ class ByteStream implements IInputStream, IOutputStream
         return $bytes;
     }
 
-    public function read(int $length = 1): ?string
+    /**
+     * @inheritdoc
+     */
+    public function read(int $length = 1): string
     {
         if ($length < 0) {
             throw new ArgumentOutOfRangeException('length');
         }
 
         if ($this->isEndOfStream()) {
-            return null;
+            throw new EndOfStreamException();
         }
 
         $position = $this->position;

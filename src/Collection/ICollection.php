@@ -10,4 +10,10 @@ use Countable;
  */
 interface ICollection extends IteratorAggregate, Countable
 {
+    /**
+     * Returns true if this collection is empty.
+     *
+     * @return bool
+     */
+    public function isEmpty(): bool;
 }

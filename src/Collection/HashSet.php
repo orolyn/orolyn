@@ -39,6 +39,14 @@ class HashSet implements ICollection
     }
 
     /**
+     * @inheritdoc
+     */
+    public function isEmpty(): bool
+    {
+        return $this->source->isEmpty();
+    }
+
+    /**
      * @param mixed $item
      * @return void
      */

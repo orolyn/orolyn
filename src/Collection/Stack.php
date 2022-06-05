@@ -2,6 +2,7 @@
 namespace Orolyn\Collection;
 
 use \Ds\Stack as DsStack;
+use Orolyn\InvalidOperationException;
 
 class Stack implements ICollection
 {
@@ -24,8 +25,20 @@ class Stack implements ICollection
         }
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function isEmpty(): bool
+    {
+        return $this->source->isEmpty();
+    }
+
     public function peek(): mixed
     {
+        if ($this->source->isEmpty()) {
+            throw new InvalidOperationException('Stack is empty');
+        }
+
         return $this->source->peek();
     }
 

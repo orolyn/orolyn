@@ -120,7 +120,7 @@ class FileStream implements IInputStream, IOutputStream
     /**
      * @inheritdoc
      */
-    public function read(int $length = 1): ?string
+    public function read(int $length = 1): string
     {
         if (!$this->options->fileAccess->canRead()) {
             throw new NotSupportedException('File stream is not open for reading');
@@ -131,10 +131,9 @@ class FileStream implements IInputStream, IOutputStream
         }
 
         if ($this->options->hasEOF) {
-            $length = Math::min($length, $this->getBytesAvailable());
 
-            if (0 === $length) {
-                return null;
+            if ($length > $this->getBytesAvailable()) {
+                throw new EndOfStreamException();
             }
         }
 

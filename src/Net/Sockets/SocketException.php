@@ -1,9 +1,9 @@
 <?php
 namespace Orolyn\Net\Sockets;
 
-use Orolyn\IO\IOException;
+use Orolyn\RuntimeException;
 
-class SocketException extends IOException
+class SocketException extends RuntimeException
 {
 
 }

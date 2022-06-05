@@ -32,6 +32,14 @@ class EmptyList implements IList
     /**
      * @inheritdoc
      */
+    public function isEmpty(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function offsetExists($offset): bool
     {
         return false;
@@ -60,7 +68,7 @@ class EmptyList implements IList
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function indexOf(mixed $item): int
     {
@@ -68,7 +76,7 @@ class EmptyList implements IList
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function contains(mixed $value): bool
     {

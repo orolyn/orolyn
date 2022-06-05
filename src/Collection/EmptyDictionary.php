@@ -13,7 +13,7 @@ use Generator;
 class EmptyDictionary implements IDictionary
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getIterator(): Generator
     {
@@ -23,7 +23,7 @@ class EmptyDictionary implements IDictionary
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function count(): int
     {
@@ -31,7 +31,15 @@ class EmptyDictionary implements IDictionary
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
+     */
+    public function isEmpty(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @inheritdoc
      */
     public function offsetExists(mixed $offset): bool
     {
@@ -39,7 +47,7 @@ class EmptyDictionary implements IDictionary
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function offsetGet(mixed $offset): mixed
     {
@@ -47,35 +55,35 @@ class EmptyDictionary implements IDictionary
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function offsetUnset(mixed $offset): void
     {
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function clear(): void
     {
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function remove(mixed $key): void
     {
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function get(mixed $key): mixed
     {
@@ -83,7 +91,7 @@ class EmptyDictionary implements IDictionary
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function try(mixed $key, mixed &$value): bool
     {
@@ -91,21 +99,21 @@ class EmptyDictionary implements IDictionary
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function add(mixed $key, mixed $value): void
     {
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function set(mixed $key, mixed $value): void
     {
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function containsKey(mixed $key): bool
     {
@@ -113,7 +121,7 @@ class EmptyDictionary implements IDictionary
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function contains(mixed $value): bool
     {

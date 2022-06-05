@@ -42,7 +42,7 @@ class PermessageDeflate extends Extension
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public static function create(IList $parameters): static
     {
@@ -143,7 +143,7 @@ class PermessageDeflate extends Extension
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function encode(Frame $frame, string $bytes): string
     {
@@ -169,11 +169,13 @@ class PermessageDeflate extends Extension
             );
         }
 
-        return deflate_add($this->deflator, $bytes);
+        $deflated = deflate_add($this->deflator, $bytes);
+
+        return $frame->final ? substr($deflated, 0, -4) : $deflated;
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function decode(Frame $frame, string $bytes): string
     {
@@ -197,8 +199,6 @@ class PermessageDeflate extends Extension
             );
         }
 
-        // TODO: something is very broken here. Consecutive reads fail.
-
-        return inflate_add($this->inflator, $bytes);
+        return inflate_add($this->inflator, $bytes . ($frame->final ? "\x00\x00\xFF\xFF" : ''));
     }
 }

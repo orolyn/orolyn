@@ -2,6 +2,7 @@
 namespace Orolyn\Net\Sockets;
 
 use Orolyn\Exception;
+use Orolyn\InvalidOperationException;
 use Orolyn\IO\File;
 use Orolyn\Lang\InternalCaller;
 use Orolyn\Net\IPEndPoint;
@@ -77,12 +78,12 @@ class ServerSocket
     /**
      * Accept a new connection if a pending connection exists.
      *
-     * @return Socket|null
+     * @return Socket
      */
-    public function accept(): ?Socket
+    public function accept(): Socket
     {
         if (!$this->isListening()) {
-            return null;
+            throw new InvalidOperationException('Socket server is not configured for listening');
         }
 
         for (;;) {
@@ -97,13 +98,12 @@ class ServerSocket
             Suspend();
         }
 
-        if ($handle = stream_socket_accept($this->handle)) {
-            $socket = new Socket();
-            InternalCaller::callMethod($socket, 'initialize', $handle);
+        // TODO: handle this if failed
+        $handle = stream_socket_accept($this->handle);
 
-            return $socket;
-        }
+        $socket = new Socket();
+        InternalCaller::callMethod($socket, 'initialize', $handle);
 
-        return null;
+        return $socket;
     }
 }

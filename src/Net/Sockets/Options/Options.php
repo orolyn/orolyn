@@ -2,9 +2,9 @@
 
 namespace Orolyn\Net\Sockets\Options;
 
-use Orolyn\Collection\ICollection;
+use IteratorAggregate;
 
-class Options implements ICollection
+class Options implements IteratorAggregate
 {
     protected array $options = [];
 
@@ -21,11 +21,6 @@ class Options implements ICollection
         foreach ($this->options as $name => $value) {
             yield $name => $value;
         }
-    }
-
-    public function count(): int
-    {
-        return count($this->options);
     }
 
     protected function get(string $option): mixed

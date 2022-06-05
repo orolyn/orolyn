@@ -5,6 +5,7 @@ namespace Orolyn\Net\Http;
 use Orolyn\InvalidOperationException;
 use Orolyn\IO\StreamWriter;
 use Orolyn\Net\Sockets\Socket;
+use Orolyn\Net\Sockets\SocketNotConnectedException;
 
 class HttpRequestContext
 {
@@ -40,6 +41,7 @@ class HttpRequestContext
      * @param HttpResponse $response
      * @return void
      * @throws InvalidOperationException
+     * @throws SocketNotConnectedException
      */
     public function send(HttpResponse $response): void
     {

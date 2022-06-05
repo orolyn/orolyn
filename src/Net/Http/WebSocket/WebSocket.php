@@ -41,12 +41,18 @@ class WebSocket
         $this->frames = new OrderedSet();
     }
 
-    public static function create(HttpRequestContext $context, ?IList $supportedExtensions = null): ?WebSocket
+    /**
+     * @param HttpRequestContext $context
+     * @param IList|null $supportedExtensions
+     * @return WebSocket
+     * @throws InvalidWebSocketContextException
+     */
+    public static function create(HttpRequestContext $context, ?IList $supportedExtensions = null): WebSocket
     {
         $request = $context->getRequest();
 
         if (strtolower($request->getHeader('Upgrade')->getValue()) !== 'websocket') {
-            return null;
+            throw new InvalidWebSocketContextException('Request is not a websocket upgrade');
         }
 
         $supportedExtensions = $supportedExtensions ?? StaticList::createImmutableList([PermessageDeflate::class]);
@@ -55,7 +61,6 @@ class WebSocket
             $request->getHeader('Sec-WebSocket-Extensions'),
             $supportedExtensions
         );
-        $extensions = new ArrayList();
 
         $response = new HttpResponse(null, 101, [], '1.1');
         $response->setHeader('Upgrade', 'websocket');
@@ -75,7 +80,15 @@ class WebSocket
             )
         );
 
-        $context->send($response);
+        try {
+            $context->send($response);
+        } catch (SocketNotConnectedException $exception) {
+            throw new InvalidWebSocketContextException(
+                'Internal socket closed before finalising the connection',
+                0,
+                $exception
+            );
+        }
 
         return new WebSocket($context->getConnection(), $extensions);
     }
@@ -106,7 +119,7 @@ class WebSocket
      * @return void
      * @throws WebSocketClosedException
      */
-    public function send(string|WebSocketMessage $message, bool $utf8 = false): void
+    public function send(string|WebSocketMessage $message, bool $utf8 = true): void
     {
         if ($message instanceof WebSocketMessage) {
             $utf8 = $message->isUtf8();
@@ -208,7 +221,6 @@ class WebSocket
         } catch (SocketNotConnectedException $exception) {
             throw new WebSocketClosedException();
         }
-
     }
 
     /**

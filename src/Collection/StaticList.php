@@ -73,6 +73,14 @@ class StaticList implements IList
     /**
      * @inheritdoc
      */
+    public function isEmpty(): bool
+    {
+        return 0 === $this->source->getSize();
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function count(): int
     {
         return $this->source->getSize();
@@ -127,7 +135,7 @@ class StaticList implements IList
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function indexOf(mixed $item): int
     {
@@ -141,7 +149,7 @@ class StaticList implements IList
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function contains(mixed $value): bool
     {

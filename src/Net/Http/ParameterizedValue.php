@@ -65,7 +65,7 @@ class ParameterizedValue implements ICollection, ArrayAccess
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function offsetExists(mixed $offset): bool
     {
@@ -79,7 +79,7 @@ class ParameterizedValue implements ICollection, ArrayAccess
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function offsetGet(mixed $offset): mixed
     {
@@ -95,14 +95,14 @@ class ParameterizedValue implements ICollection, ArrayAccess
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function offsetUnset(mixed $offset): void
     {
@@ -114,6 +114,14 @@ class ParameterizedValue implements ICollection, ArrayAccess
     public function count(): int
     {
         return $this->items->count();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isEmpty(): bool
+    {
+        return $this->items->isEmpty();
     }
 
     /**

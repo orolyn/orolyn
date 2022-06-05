@@ -204,25 +204,25 @@ final class TaskScheduler
      */
     public function lock(?TaskLock &$target, ?callable $func = null): mixed
     {
-        $return = null;
+        $task = null;
 
-        if ($task = $this->taskStack->peek()) {
+        if (!$this->taskStack->isEmpty() && $task = $this->taskStack->peek()) {
             while (null !== $target && !$target->released) {
                 $this->suspend();
             }
+        }
 
-            $target = new TaskLock($task);
+        $target = new TaskLock($task);
 
-            if (null !== $func) {
-                try {
-                    $return = $func();
-                } finally {
-                    $this->unlock($target);
-                }
+        if (null !== $func) {
+            try {
+                return $func();
+            } finally {
+                $this->unlock($target);
             }
         }
 
-        return $return;
+        return null;
     }
 
     /**

@@ -44,6 +44,14 @@ class ArrayList implements IList
     /**
      * @inheritdoc
      */
+    public function isEmpty(): bool
+    {
+        return $this->source->isEmpty();
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function offsetExists(mixed $offset): bool
     {
         return isset($this->source[$offset]);

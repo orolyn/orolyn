@@ -9,6 +9,7 @@ use Orolyn\IO\ByteStream;
 use Orolyn\Net\Http\Parser\Parser;
 use Orolyn\Net\ServerEndPoint;
 use Orolyn\Net\Sockets\ServerSocket;
+use Orolyn\Net\Sockets\SocketNotConnectedException;
 
 class HttpServer
 {
@@ -36,6 +37,7 @@ class HttpServer
 
     /**
      * @return HttpRequestContext|null
+     * @throws FailedHttpRequestException
      */
     public function accept(): ?HttpRequestContext
     {
@@ -47,22 +49,26 @@ class HttpServer
         $socket->setEndian(Endian::BigEndian);
 
         try {
-            $line = Parser::parseRequestLine($socket);
-            $headers = [];
+            try {
+                $line = Parser::parseRequestLine($socket);
+                $headers = [];
 
-            while (null !== $header = Parser::parseHeader($socket)) {
-                $headers[$header->getName()] = $header;
+                while (null !== $header = Parser::parseHeader($socket)) {
+                    $headers[$header->getName()] = $header;
+                }
+            } catch (FormatException $exception) {
+                $socket->close();
+
+                throw new FailedHttpRequestException('Could not parse request headers', 0, $exception);
             }
-        } catch (FormatException $exception) {
-            $socket->close();
 
-            return null;
-        }
+            $request = HttpRequest::create($line, $headers);
 
-        $request = HttpRequest::create($line, $headers);
-
-        if (-1 !== $contentLength = $request->getContentLength()) {
-            $request->setBody(new ByteStream($socket->read($contentLength)));
+            if (-1 !== $contentLength = $request->getContentLength()) {
+                $request->setBody(new ByteStream($socket->read($contentLength)));
+            }
+        } catch (SocketNotConnectedException $exception) {
+            throw new FailedHttpRequestException('Connection closed before completing the request');
         }
 
         return new HttpRequestContext(

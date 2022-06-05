@@ -41,6 +41,14 @@ class LinkedList implements IList
     /**
      * @inheritdoc
      */
+    public function isEmpty(): bool
+    {
+        return $this->items->isEmpty();
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function offsetExists(mixed $offset): bool
     {
         if (TypeOf($offset) !== 'int') {

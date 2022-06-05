@@ -67,6 +67,14 @@ class Header implements ICollection
     }
 
     /**
+     * @inheritdoc
+     */
+    public function isEmpty(): bool
+    {
+        return 0 === count($this->values);
+    }
+
+    /**
      * @return string
      */
     public function getName(): string

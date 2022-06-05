@@ -41,6 +41,14 @@ class EventHandler implements ICollection
     }
 
     /**
+     * @inheritdoc
+     */
+    public function isEmpty(): bool
+    {
+        return $this->callbacks->isEmpty();
+    }
+
+    /**
      * @param callable(EventArgs):void $callback
      * @return void
      */

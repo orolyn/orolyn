@@ -7,8 +7,9 @@ use IteratorAggregate;
 /**
  * @template T
  * @extends ICollection<T>
+ * @extends ArrayAccess<int, T>
  */
-interface IList extends ICollection, \ArrayAccess
+interface IList extends ICollection, ArrayAccess
 {
     /**
      * @param T $item

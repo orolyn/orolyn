@@ -22,6 +22,14 @@ class Queue implements ICollection
         return $this->internal->count();
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function isEmpty(): bool
+    {
+        return $this->internal->isEmpty();
+    }
+
     public function getIterator(): \Generator
     {
         foreach ($this->internal as $item) {

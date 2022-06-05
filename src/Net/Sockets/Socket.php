@@ -152,7 +152,7 @@ class Socket implements IInputStream, IOutputStream
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isEndOfStream(): bool
     {
@@ -160,7 +160,7 @@ class Socket implements IInputStream, IOutputStream
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @throws SocketException
      * @throws SocketNotConnectedException
@@ -183,12 +183,12 @@ class Socket implements IInputStream, IOutputStream
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @throws SocketException
      * @throws SocketNotConnectedException
      */
-    public function read(int $length = 1): ?string
+    public function read(int $length = 1): string
     {
         if ($length < 0) {
             throw new ArgumentOutOfRangeException('length');
@@ -201,23 +201,22 @@ class Socket implements IInputStream, IOutputStream
             return $this->iBuf->dequeue($length);
         }
 
-        // The connection is closed and there aren't enough bytes in the buffer, so just give the remaining bytes.
-        if (!$this->isConnected() && $available > 0) {
-            return $this->iBuf->restart();
-        }
-
-        if (!$this->isConnected() && $available < 1) {
+        if (!$this->isConnected()) {
             throw new SocketNotConnectedException();
         }
 
         $bytes = $this->iBuf->restart();
 
-        do {
+        for (;;) {
             if (false === $available = $this->getInput()) {
                 $this->throwLastError();
             }
 
             if (0 === $available) {
+                if (!$this->isConnected()) {
+                    throw new SocketNotConnectedException();
+                }
+
                 Suspend();
                 continue;
             }
@@ -231,7 +230,11 @@ class Socket implements IInputStream, IOutputStream
             }
 
             $bytes .= $this->iBuf->restart();
-        } while ($this->isConnected());
+
+            if (!$this->isConnected() && strlen($bytes) < $length) {
+                throw new SocketNotConnectedException();
+            }
+        }
 
         return $bytes;
     }
@@ -283,7 +286,7 @@ class Socket implements IInputStream, IOutputStream
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @throws SocketNotConnectedException
      */
