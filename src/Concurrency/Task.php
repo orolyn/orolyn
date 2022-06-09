@@ -216,7 +216,7 @@ final class Task
     public function __destruct()
     {
         if ($this->exception && !$this->exceptionObserved) {
-            if (TaskScheduler::getTaskScheduler()->throwUnobservedTaskException($this->exception)) {
+            if (TaskScheduler::throwUnobservedTaskException($this->exception)) {
                 throw $this->exception;
             }
         }

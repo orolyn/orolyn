@@ -1,7 +1,7 @@
 <?php
 namespace Orolyn\Net\Sockets;
 
-use Orolyn\Exception;
+use Exception;
 use Orolyn\InvalidOperationException;
 use Orolyn\IO\File;
 use Orolyn\Lang\InternalCaller;

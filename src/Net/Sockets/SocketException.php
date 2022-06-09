@@ -1,7 +1,7 @@
 <?php
 namespace Orolyn\Net\Sockets;
 
-use Orolyn\RuntimeException;
+use RuntimeException;
 
 class SocketException extends RuntimeException
 {

@@ -51,22 +51,12 @@ function Await(callable|iterable|Task ...$tasks): void
 
     if (1 === count($collection)) {
         $collection[0]->wait();
+
+        return;
     }
 
-    if (count($collection) > 0) {
+    if (count($collection) > 1) {
         TaskScheduler::awaitTasks(new ArrayList($collection));
-    }
-
-    $exceptions = [];
-
-    foreach ($collection as $task) {
-        if ($exception = $task->getException()) {
-            $exceptions[] = $exception;
-        }
-    }
-
-    if (count($exceptions) > 0) {
-        throw new AggregateException(null, StaticList::createImmutableList($exceptions));
     }
 }
 
@@ -89,7 +79,7 @@ function Suspend(float $delay = 0): void
  */
 function Lock(?TaskLock &$lock, ?callable $func = null): mixed
 {
-    return TaskScheduler::getTaskScheduler()->lock($lock, $func);
+    return TaskScheduler::lock($lock, $func);
 }
 
 /**
@@ -98,5 +88,5 @@ function Lock(?TaskLock &$lock, ?callable $func = null): mixed
  */
 function Unlock(?TaskLock &$lock): void
 {
-    TaskScheduler::getTaskScheduler()->unlock($lock);
+    TaskScheduler::unlock($lock);
 }

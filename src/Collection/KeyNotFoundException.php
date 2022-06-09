@@ -2,8 +2,8 @@
 
 namespace Orolyn\Collection;
 
-use Orolyn\Exception;
-use Orolyn\RuntimeException;
+use Exception;
+use RuntimeException;
 
 class KeyNotFoundException extends RuntimeException
 {

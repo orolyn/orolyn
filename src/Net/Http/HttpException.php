@@ -2,7 +2,7 @@
 
 namespace Orolyn\Net\Http;
 
-use Orolyn\Exception;
+use Exception;
 
 class HttpException extends Exception
 {

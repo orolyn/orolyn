@@ -1,7 +1,7 @@
 <?php
 namespace Orolyn\Serialization;
 
-use Orolyn\Exception;
+use Exception;
 
 class SerializationException extends Exception
 {

@@ -1,7 +1,7 @@
 <?php
 namespace Orolyn\IO;
 
-use Orolyn\Exception;
+use Exception;
 
 class IOException extends Exception
 {

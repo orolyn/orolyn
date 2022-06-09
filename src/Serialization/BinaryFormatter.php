@@ -10,7 +10,7 @@ use Orolyn\Event\DeserializeEvent;
 use Orolyn\Event\EventDispatcher;
 use Orolyn\Event\EventLoop;
 use Orolyn\Event\SerializeEvent;
-use Orolyn\Exception;
+use Exception;
 use Orolyn\IO\IInputStream;
 use Orolyn\IO\IOutputStream;
 use Orolyn\Math;

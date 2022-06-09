@@ -2,7 +2,7 @@
 
 namespace Orolyn\Concurrency;
 
-use Orolyn\RuntimeException;
+use RuntimeException;
 
 class TaskSchedulerException extends RuntimeException
 {

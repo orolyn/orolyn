@@ -2,7 +2,7 @@
 
 namespace Orolyn\Collection;
 
-use Orolyn\RuntimeException;
+use RuntimeException;
 
 class KeyAlreadyExistsException extends RuntimeException
 {
