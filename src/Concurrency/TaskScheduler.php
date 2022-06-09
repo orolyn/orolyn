@@ -21,28 +21,15 @@ final class TaskScheduler
     private ?Application $application = null;
 
     /**
-     * @var ArrayList<Task>
-     */
-    private ArrayList $tasks;
-
-    /**
      * @var EventHandler
      */
     private EventHandler $unobservedExceptionsHandler;
-
-    /**
-     * @var Stack
-     */
-    private Stack $taskStack;
 
     /**
      * Constructor
      */
     private function __construct()
     {
-        $this->tasks = new ArrayList();
-        $this->taskStack = new Stack();
-
         $this->unobservedExceptionsHandler = new EventHandler();
         $this->unobservedExceptionsHandler->add($this->onUnobservedTaskException(...));
 
@@ -61,10 +48,12 @@ final class TaskScheduler
     public static function run(Application $application): void
     {
         $scheduler = self::getTaskScheduler();
+        $scheduler->application = $application;
 
-        $scheduler->bootApplication($application);
-        $scheduler->awaitTasks($scheduler->tasks);
+        $task = new Task(fn () => $application->main());
+        $task->start();
 
+        $scheduler->awaitTasks(new ArrayList([$task]));
         $application->terminate();
     }
 
@@ -120,23 +109,10 @@ final class TaskScheduler
     /**
      * @internal
      *
-     * @param Task $task
-     * @return void
-     */
-    public function addTask(Task $task): void
-    {
-        if (null !== $this->application) {
-            $this->tasks[] = $task;
-        }
-    }
-
-    /**
-     * @internal
-     *
      * @param ArrayList<Task> $tasks
      * @return void
      */
-    public function awaitTasks(ArrayList $tasks): void
+    public static function awaitTasks(ArrayList $tasks): void
     {
         for (;;) {
             $time = microtime(true);
@@ -153,29 +129,14 @@ final class TaskScheduler
                     }
                 }
 
-                $this->resumeTask($task);
+                $task->resume();
             }
 
             if ($tasks->count() < 1) {
                 break;
             }
 
-            if ($this->tasks === $tasks || null === $this->application) {
-                $this->sleep();
-            } else {
-                $this->suspend();
-            }
-        }
-    }
-
-    public function resumeTask(Task $task): void
-    {
-        $this->taskStack->push($task);
-
-        InternalCaller::callMethod($task, 'progress');
-
-        if ($task !== $this->taskStack->pop()) {
-            throw new TaskSchedulerException('Task stack is in an invalid state');
+            self::suspend();
         }
     }
 
@@ -184,14 +145,14 @@ final class TaskScheduler
      *
      * @return void
      */
-    public function suspend(float $delay = 0): void
+    public static function suspend(float $delay = 0): void
     {
         $currentFiber = Fiber::getCurrent();
 
         if ($currentFiber) {
             Fiber::suspend(new TaskSuspensionTime($delay, microtime(true)));
         } else {
-            $this->sleep($delay);
+            self::sleep($delay);
         }
     }
 
@@ -206,10 +167,8 @@ final class TaskScheduler
     {
         $task = null;
 
-        if (!$this->taskStack->isEmpty() && $task = $this->taskStack->peek()) {
-            while (null !== $target && !$target->released) {
-                $this->suspend();
-            }
+        while (null !== $target && !$target->released) {
+            $this->suspend();
         }
 
         $target = new TaskLock($task);
@@ -243,22 +202,10 @@ final class TaskScheduler
     }
 
     /**
-     * @param Application $application
-     * @return void
-     */
-    private function bootApplication(Application $application): void
-    {
-        $this->application = $application;
-
-        $task = new Task(fn () => $application->main());
-        $task->start();
-    }
-
-    /**
      * @param float $delay
      * @return void
      */
-    private function sleep(float $delay = 0): void
+    private static function sleep(float $delay = 0): void
     {
         if ($delay > 0) {
             usleep($delay * 1000);

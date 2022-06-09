@@ -137,8 +137,7 @@ final class Task
     }
 
     /**
-     * Start the task. If the calling code is running within a managed application, this task will be added
-     * to the task scheduler.
+     * Start the task.
      *
      * @return void
      */
@@ -148,18 +147,48 @@ final class Task
             throw new InvalidOperationException('Task is already started.');
         }
 
-        TaskScheduler::getTaskScheduler()->resumeTask($this);
+        $this->resume();
     }
 
     /**
-     * Start the task. If the calling code is running within a managed application, this task will be added
-     * to the task scheduler.
+     * Resume the task.
      *
      * @return void
      */
     public function resume(): void
     {
-        TaskScheduler::getTaskScheduler()->resumeTask($this);
+        if ($this->completed) {
+            return;
+        }
+
+        try {
+            $this->suspensionTime = null;
+
+            if (!$this->fiber) {
+                $callback = $this->callback;
+                $args = $this->args;
+
+                $this->callback = null;
+                $this->args = null;
+
+                $this->fiber = new Fiber($callback);
+
+                $this->suspensionTime = $this->fiber->start($args);
+            } else {
+                $this->suspensionTime = $this->fiber->resume();
+            }
+        } catch (Throwable $exception) {
+            $this->completed = true;
+            $this->exception = new AggregateException($exception);
+        }
+
+        if ($this->fiber->isTerminated()) {
+            if (!$this->exception) {
+                $this->result = $this->fiber->getReturn();
+            }
+
+            $this->completed = true;
+        }
     }
 
     /**
@@ -170,7 +199,7 @@ final class Task
     public function wait(): void
     {
         if (!$this->completed) {
-            TaskScheduler::getTaskScheduler()->awaitTasks(new ArrayList([$this]));
+            TaskScheduler::awaitTasks(new ArrayList([$this]));
         }
 
         if ($this->exception) {
@@ -190,48 +219,6 @@ final class Task
             if (TaskScheduler::getTaskScheduler()->throwUnobservedTaskException($this->exception)) {
                 throw $this->exception;
             }
-        }
-    }
-
-    /**
-     * Internally reflected method for communication by the scheduler.
-     *
-     * @return void
-     */
-    private function progress(): void
-    {
-        if ($this->completed) {
-            return;
-        }
-
-        try {
-            $this->suspensionTime = null;
-
-            if (!$this->fiber) {
-                $callback = $this->callback;
-                $args = $this->args;
-
-                $this->callback = null;
-                $this->args = null;
-
-                $this->fiber = new Fiber($callback);
-                TaskScheduler::getTaskScheduler()->addTask($this);
-
-                $this->suspensionTime = $this->fiber->start($args);
-            } else {
-                $this->suspensionTime = $this->fiber->resume();
-            }
-        } catch (Throwable $exception) {
-            $this->completed = true;
-            $this->exception = new AggregateException($exception);
-        }
-
-        if ($this->fiber->isTerminated()) {
-            if (!$this->exception) {
-                $this->result = $this->fiber->getReturn();
-            }
-
-            $this->completed = true;
         }
     }
 }

@@ -39,7 +39,7 @@ function Await(callable|iterable|Task ...$tasks): void
         } else {
             foreach ($task as $thisTask) {
                 if (is_callable($thisTask)) {
-                    $task = new Task($thisTask);
+                    $thisTask = new Task($thisTask);
                 } elseif (!$thisTask instanceof Task) {
                     throw new ArgumentException('Iterable collection must only contain tasks or callables.');
                 }
@@ -54,7 +54,7 @@ function Await(callable|iterable|Task ...$tasks): void
     }
 
     if (count($collection) > 0) {
-        TaskScheduler::getTaskScheduler()->awaitTasks(new ArrayList($collection));
+        TaskScheduler::awaitTasks(new ArrayList($collection));
     }
 
     $exceptions = [];
@@ -79,7 +79,7 @@ function Await(callable|iterable|Task ...$tasks): void
  */
 function Suspend(float $delay = 0): void
 {
-    TaskScheduler::getTaskScheduler()->suspend($delay);
+    TaskScheduler::suspend($delay);
 }
 
 /**
