@@ -78,63 +78,63 @@ interface IInputStream
     public function read(int $length = 1): string;
 
     /**
-     * Read a single 8 bit integer.
+     * Read a single 8-bit integer.
      *
      * @return int
      */
     public function readInt8(): int;
 
     /**
-     * Read a single 16 bit integer.
+     * Read a single 16-bit integer.
      *
      * @return int
      */
     public function readInt16(): int;
 
     /**
-     * Read a single 32 bit integer.
+     * Read a single 32-bit integer.
      *
      * @return int
      */
     public function readInt32(): int;
 
     /**
-     * Read a single 64 bit integer.
+     * Read a single 64-bit integer.
      *
      * @return int
      */
     public function readInt64(): int;
 
     /**
-     * Read a single 8 bit unsigned integer.
+     * Read a single 8-bit unsigned integer.
      *
      * @return int
      */
     public function readUnsignedInt8(): int;
 
     /**
-     * Read a single 16 bit unsigned integer.
+     * Read a single 16-bit unsigned integer.
      *
      * @return int
      */
     public function readUnsignedInt16(): int;
 
     /**
-     * Read a single 32 bit unsigned integer.
+     * Read a single 32-bit unsigned integer.
      *
      * @return int
      */
     public function readUnsignedInt32(): int;
 
     /**
-     * Read a single 64 bit unsigned integer. Maximum is the same as :readInt64()
+     * Read a single 64-bit unsigned integer. Maximum is the same as :readInt64() or overflow.
      *
      * @return int
      */
     public function readUnsignedInt64(): int;
 
     /**
-     * Read a single 32 bit floating point value.
+     * Read a single 32-bit floating point value.
      *
      * @return float
      */

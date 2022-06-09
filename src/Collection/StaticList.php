@@ -7,6 +7,8 @@ use SplFixedArray;
 use function Orolyn\Lang\TypeOf;
 
 /**
+ * TODO: get rid of this
+ *
  * @template T
  * @extends IList<T>
  */

@@ -1,7 +1,6 @@
 <?php
 namespace Orolyn;
 
-use Orolyn\Primitive\TypeInt32;
 use Orolyn\Primitive\TypeInt64;
 use function Orolyn\Lang\Int32;
 use function Orolyn\Lang\String;
@@ -20,7 +19,7 @@ final class Random
      * @param int $b
      * @return int
      */
-    public static function generate(int $a = 0, int $b = TypeInt32::MAX_VALUE): int
+    public static function generateInt(int $a = TypeInt64::MIN_VALUE, int $b = TypeInt64::MAX_VALUE): int
     {
         return mt_rand($a, $b);
     }
@@ -36,7 +35,7 @@ final class Random
         $bytes = '';
 
         for ($i = 0; $i < $length; $i += 4) {
-            $bytes .= Int32(self::generate())->getBytes();
+            $bytes .= Int32(self::generateInt())->getBytes();
         }
 
         return String($bytes)->substring(0, $length);

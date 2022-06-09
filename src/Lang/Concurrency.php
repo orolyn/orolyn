@@ -1,10 +1,8 @@
 <?php
 namespace Orolyn\Lang;
 
-use Orolyn\AggregateException;
 use Orolyn\ArgumentException;
 use Orolyn\Collection\ArrayList;
-use Orolyn\Collection\StaticList;
 use Orolyn\Concurrency\Task;
 use Orolyn\Concurrency\TaskLock;
 use Orolyn\Concurrency\TaskScheduler;

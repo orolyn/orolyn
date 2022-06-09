@@ -7,6 +7,7 @@ use Orolyn\Collection\ArrayList;
 use Orolyn\Collection\EmptyList;
 use Orolyn\Collection\IList;
 use Orolyn\Collection\StaticList;
+use RuntimeException;
 use Throwable;
 
 class AggregateException extends RuntimeException

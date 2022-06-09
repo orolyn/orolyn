@@ -6,10 +6,8 @@ use Orolyn\IO\FileMode;
 use Orolyn\IO\FileStream;
 use Orolyn\IO\FileStreamOptions;
 use Orolyn\IO\IInputStream;
-use Orolyn\Primitive\TypeInt32;
 use Orolyn\Primitive\TypeInt64;
-use function Orolyn\Lang\Int32;
-use function Orolyn\Lang\String;
+use function Orolyn\Lang\Int64;
 
 final class SecureRandom
 {
@@ -25,9 +23,9 @@ final class SecureRandom
      * @param int $b
      * @return int
      */
-    public static function generate(int $a = 0, int $b = TypeInt32::MAX_VALUE): int
+    public static function generateInt(int $a = TypeInt64::MIN_VALUE, int $b = TypeInt64::MAX_VALUE): int
     {
-        return 0; // TODO
+        return round((($b - $a) * Math::abs(Int64(self::generateBytes(8))->getValue()) / TypeInt64::MAX_VALUE) + $a);
     }
 
     /**

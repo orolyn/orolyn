@@ -10,7 +10,7 @@ use SplObjectStorage;
  */
 class HashSet implements ICollection
 {
-    private Set $source;
+    protected Set $source;
 
     /**
      * @param iterable<T> $values

@@ -1,5 +1,8 @@
 <?php
+
 namespace Orolyn;
+
+use RuntimeException;
 
 class ArgumentException extends RuntimeException
 {
