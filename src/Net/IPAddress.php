@@ -1,12 +1,14 @@
 <?php
 namespace Orolyn\Net;
 
+use Orolyn\IEquatable;
+use Orolyn\NotImplementedException;
 use function Orolyn\Lang\Int32;
 use function Orolyn\Lang\String;
 use function Orolyn\Lang\UnsignedInt8;
 use Orolyn\StandardObject;
 
-final class IPAddress
+final class IPAddress implements IEquatable
 {
     private $value;
 
@@ -18,6 +20,10 @@ final class IPAddress
     public static function parse(string $address): IPAddress
     {
         // TODO: extend this method
+
+        if (false !== strpos($address, ':')) {
+            throw new NotImplementedException('IPv6 not yet implemented');
+        }
 
         $parts = String($address)->explode('.');
 
@@ -34,6 +40,11 @@ final class IPAddress
     public function equals($value): bool
     {
         return $value instanceof IPAddress && $value->value === $this->value;
+    }
+
+    public function hash(): int
+    {
+        return $this->value;
     }
 
     /**

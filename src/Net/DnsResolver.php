@@ -5,6 +5,7 @@ use Orolyn\Collection\ArrayList;
 use Orolyn\Endian;
 use Orolyn\Net\Sockets\DatagramPacket;
 use Orolyn\Net\Sockets\DatagramSocket;
+use Orolyn\SecureRandom;
 use function Orolyn\Lang\String;
 use function Orolyn\Lang\UnsignedInt16;
 use Orolyn\Primitive\TypeString;
@@ -34,6 +35,9 @@ class DnsResolver
 
     public static function lookup(string $host): ?IPHostEntry
     {
+        // TODO: implement local checks
+        // TODO: see if OS checks can be used.
+
         $socket = new DatagramSocket();
         $socket->connect(new IPEndPoint(IPAddress::parse('8.8.8.8'), 53));
 
@@ -41,7 +45,7 @@ class DnsResolver
         $packet->setEndian(Endian::BigEndian);
 
         $header = self::createPacketHeader();
-        $header->id = $id = UnsignedInt16(random_bytes(2))->getValue();
+        $header->id = $id = UnsignedInt16(SecureRandom::generateBytes(2))->getValue();
         $header->qdCount = 1;
         $header->rd = 1;
         $header->opcode = self::OPCODE_QUERY;

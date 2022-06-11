@@ -15,6 +15,15 @@ class File
         $this->path = $path;
     }
 
+    public static function readAllText(string $path): string
+    {
+        $stream = new FileStream(new File($path));
+        $text = $stream->read($stream->getLength());
+        $stream->close();;
+
+        return $text;
+    }
+
     public function exists(): bool
     {
         return null !== $this->stat();

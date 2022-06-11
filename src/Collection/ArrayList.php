@@ -50,6 +50,16 @@ class ArrayList implements IList
     }
 
     /**
+     * Make a copy of this ArrayList
+     *
+     * @return ArrayList
+     */
+    public function copy(): ArrayList
+    {
+        return new ArrayList($this->source->copy());
+    }
+
+    /**
      * @inheritdoc
      */
     public function offsetExists(mixed $offset): bool
