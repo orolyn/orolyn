@@ -1,13 +1,11 @@
 <?php
 namespace Orolyn;
 
-use Orolyn\Collection\ArrayList;
-use function Orolyn\Lang\Int16;
-use function Orolyn\Lang\Int32;
-use Orolyn\Primitive\TypeInt32;
 use Orolyn\Serialization\ISerializable;
 use Orolyn\Serialization\SerializationInfo;
-use function Orolyn\Lang\Int8;
+use function Orolyn\Int16;
+use function Orolyn\Int32;
+use function Orolyn\Int8;
 
 final class Guid implements ISerializable
 {
@@ -38,7 +36,7 @@ final class Guid implements ISerializable
         }
 
         if (TypeOf($a) === 'string') {
-            if (String($a)->getLength() === 16) {
+            if (strlen($a) === 16) {
                 $this->doParseBytes($a);
             } else {
                 $this->doParseFormatted($a);

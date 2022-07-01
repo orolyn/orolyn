@@ -1,8 +1,8 @@
 <?php
 namespace Orolyn\Net;
 
-use function Orolyn\Lang\Int32;
-use function Orolyn\Lang\String;
+use function Orolyn\Int32;
+use function Orolyn\String;
 
 final class IPEndPoint extends EndPoint implements ServerEndPoint
 {
@@ -52,7 +52,7 @@ final class IPEndPoint extends EndPoint implements ServerEndPoint
 
     public function __toString(): string
     {
-        return String('%s:%s')->format($this->address, $this->port);
+        return sprintf('%s:%s', $this->address, $this->port);
     }
 
     /**

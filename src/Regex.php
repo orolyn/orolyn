@@ -1,7 +1,7 @@
 <?php
 namespace Orolyn;
 
-use function Orolyn\Lang\String;
+use function Orolyn\String;
 
 class Regex
 {
@@ -11,7 +11,7 @@ class Regex
     public function __construct(string $pattern)
     {
         $this->base = $pattern;
-        $this->pattern = String('/%s/')->format($pattern);
+        $this->pattern = sprintf('/%s/', $pattern);
     }
 
     public static function create(string $pattern): Regex

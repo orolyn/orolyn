@@ -3,15 +3,13 @@
 namespace Orolyn\Net\Http\WebSocket;
 
 use Orolyn\Collection\IList;
-use Orolyn\IO\ByteStream;
 use Orolyn\IO\IInputStream;
 use Orolyn\IO\IOutputStream;
-use Orolyn\Net\Sockets\SocketNotConnectedException;
 use Orolyn\Primitive\TypeUnsignedInt16;
+use Orolyn\Net\Sockets\SocketNotConnectedException;
 use Orolyn\SecureRandom;
 use Orolyn\Timer;
-use function Orolyn\Lang\Suspend;
-use function Orolyn\Lang\VarDumpBinary;
+use function Orolyn\Suspend;
 
 class Frame
 {

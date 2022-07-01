@@ -43,6 +43,4 @@ interface IOutputStream
     public function writeDouble($value): void;
 
     public function writeBool($value): void;
-
-    public function writeObject(object $value): void;
 }

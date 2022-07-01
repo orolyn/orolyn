@@ -11,7 +11,7 @@ use Orolyn\Net\IPAddress;
 use Orolyn\Net\IPEndPoint;
 use Orolyn\Net\IPHostEntry;
 use Orolyn\NotImplementedException;
-use function Orolyn\Lang\Suspend;
+use function Orolyn\Suspend;
 
 class DatagramSocket
 {

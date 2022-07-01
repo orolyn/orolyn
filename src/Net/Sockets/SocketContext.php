@@ -5,7 +5,7 @@ namespace Orolyn\Net\Sockets;
 use Orolyn\ArgumentException;
 use Orolyn\Collection\Dictionary;
 use Orolyn\Net\Sockets\Options\Options;
-use function Orolyn\Lang\ClassInstanceOf;
+use Orolyn\Reflection;
 
 class SocketContext
 {
@@ -33,7 +33,7 @@ class SocketContext
      */
     public function getOptions(string $className): ?Options
     {
-        if (!ClassInstanceOf($className, Options::class)) {
+        if (!Reflection::classInstanceOf($className, Options::class)) {
             throw new ArgumentException('Invalid options class name.');
         }
 

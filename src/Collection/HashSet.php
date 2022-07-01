@@ -17,7 +17,7 @@ class HashSet implements ICollection
      */
     public function __construct(iterable $values = [])
     {
-        $this->source = $values instanceof Set ? $values : new Set($values);
+        $this->source = new Set(Item::getArray($values));
     }
 
     /**
@@ -34,7 +34,7 @@ class HashSet implements ICollection
     public function getIterator(): \Generator
     {
         foreach ($this->source as $item) {
-            yield $item;
+            yield $item->value;
         }
     }
 
@@ -52,7 +52,7 @@ class HashSet implements ICollection
      */
     public function add(mixed $item): void
     {
-        $this->source->add($item);
+        $this->source->add(new Item($item));
     }
 
     /**
@@ -61,7 +61,7 @@ class HashSet implements ICollection
      */
     public function remove($item): void
     {
-        $this->source->remove($item);
+        $this->source->remove(new Item($item));
     }
 
     /**
@@ -70,7 +70,7 @@ class HashSet implements ICollection
      */
     public function contains($item): bool
     {
-        return $this->source->contains($item);
+        return $this->source->contains(new Item($item));
     }
 
     /**
@@ -78,6 +78,9 @@ class HashSet implements ICollection
      */
     public function copy(): HashSet
     {
-        return new HashSet($this->source->copy());
+        $hashSet = new static();
+        $hashSet->source = $this->source->copy();
+
+        return $hashSet;
     }
 }

@@ -4,7 +4,7 @@ namespace Orolyn\Net\Sockets;
 use Orolyn\IO\ByteArray;
 use Orolyn\IO\ByteStream;
 use Orolyn\Net\EndPoint;
-use function Orolyn\Lang\UnsignedInt16;
+use function Orolyn\UnsignedInt16;
 
 class DatagramPacket extends ByteStream
 {

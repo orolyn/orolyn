@@ -3,7 +3,6 @@ namespace Orolyn\Net;
 
 use Orolyn\Collection\ArrayList;
 use Orolyn\Collection\IList;
-use Orolyn\StandardObject;
 
 final class IPHostEntry
 {

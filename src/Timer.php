@@ -1,7 +1,7 @@
 <?php
 namespace Orolyn;
 
-use function Orolyn\Lang\Suspend;
+use function Orolyn\Suspend;
 
 class Timer
 {

@@ -5,7 +5,7 @@ use Ds\Vector;
 use Orolyn\ArgumentException;
 use Orolyn\ArgumentOutOfRangeException;
 use OutOfRangeException;
-use function Orolyn\Lang\TypeOf;
+use function Orolyn\TypeOf;
 
 /**
  * @template T
@@ -16,11 +16,11 @@ class ArrayList implements IList
     private Vector $source;
 
     /**
-     * @param iterable|null $source
+     * @param iterable|null $values
      */
-    public function __construct(iterable $source = [])
+    public function __construct(iterable $values = [])
     {
-        $this->source = $source instanceof Vector ? $source : new Vector($source);
+        $this->source = new Vector(Item::getArray($values));
     }
 
     /**
@@ -29,7 +29,7 @@ class ArrayList implements IList
     public function getIterator(): \Generator
     {
         foreach ($this->source as $item) {
-            yield $item;
+            yield $item->value;
         }
     }
 
@@ -56,7 +56,10 @@ class ArrayList implements IList
      */
     public function copy(): ArrayList
     {
-        return new ArrayList($this->source->copy());
+        $list = new ArrayList();
+        $list->source = $this->source->copy();
+
+        return $list;
     }
 
     /**
@@ -73,7 +76,7 @@ class ArrayList implements IList
     public function offsetGet(mixed $offset): mixed
     {
         try {
-            return $this->source[$offset];
+            return $this->source[$offset]->value;
         } catch (OutOfRangeException $exception) {
             throw new ArgumentOutOfRangeException('index');
         }
@@ -86,9 +89,9 @@ class ArrayList implements IList
     {
         try {
             if (null === $offset) {
-                $this->source[] = $value;
+                $this->source[] = new Item($value);
             } else {
-                $this->source[$offset] = $value;
+                $this->source[$offset] = new Item($value);
             }
         } catch (OutOfRangeException) {
             throw new ArgumentOutOfRangeException('offset');
@@ -127,7 +130,7 @@ class ArrayList implements IList
      */
     public function indexOf(mixed $item): int
     {
-        if (false === $index = $this->source->find($item)) {
+        if (false === $index = $this->source->find(new Item($item))) {
             return -1;
         }
 
@@ -155,6 +158,13 @@ class ArrayList implements IList
      */
     public function map(callable $func): static
     {
-        return new ArrayList($this->source->map($func));
+        $mapped = new ArrayList();
+        $mapped->source = $this->source->map(
+            function ($value) use ($func) {
+                return new Item($func($value->value));
+            }
+        );
+
+        return $mapped;
     }
 }

@@ -4,7 +4,7 @@ namespace Orolyn\Net\Sockets;
 use Orolyn\Net\DnsEndPoint;
 use Orolyn\Net\EndPoint;
 use Orolyn\Net\Sockets\Options\SecureOptions;
-use function Orolyn\Lang\Suspend;
+use function Orolyn\Suspend;
 
 class SecureSocket extends Socket
 {

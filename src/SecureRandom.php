@@ -7,7 +7,7 @@ use Orolyn\IO\FileStream;
 use Orolyn\IO\FileStreamOptions;
 use Orolyn\IO\IInputStream;
 use Orolyn\Primitive\TypeInt64;
-use function Orolyn\Lang\Int64;
+use function Orolyn\Int64;
 
 final class SecureRandom
 {
@@ -25,7 +25,8 @@ final class SecureRandom
      */
     public static function generateInt(int $a = TypeInt64::MIN_VALUE, int $b = TypeInt64::MAX_VALUE): int
     {
-        return round((($b - $a) * Math::abs(Int64(self::generateBytes(8))->getValue()) / TypeInt64::MAX_VALUE) + $a);
+        return round((($b - $a) *
+                Math::abs(ByteConverter::getInt64(self::generateBytes(8))) / TypeInt64::MAX_VALUE) + $a);
     }
 
     /**

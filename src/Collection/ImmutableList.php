@@ -3,7 +3,7 @@ namespace Orolyn\Collection;
 
 use Orolyn\ArgumentException;
 use Orolyn\ArgumentOutOfRangeException;
-use function Orolyn\Lang\TypeOf;
+use function Orolyn\TypeOf;
 
 /**
  * @template T

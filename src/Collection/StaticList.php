@@ -4,7 +4,7 @@ namespace Orolyn\Collection;
 use Orolyn\ArgumentException;
 use Orolyn\ArgumentOutOfRangeException;
 use SplFixedArray;
-use function Orolyn\Lang\TypeOf;
+use function Orolyn\TypeOf;
 
 /**
  * TODO: get rid of this

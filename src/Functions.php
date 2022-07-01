@@ -1,5 +1,5 @@
 <?php
-namespace Orolyn\Lang;
+namespace Orolyn;
 
 use Orolyn\ArgumentException;
 use Orolyn\Collection\ArrayList;
@@ -87,4 +87,40 @@ function Lock(?TaskLock &$lock, ?callable $func = null): mixed
 function Unlock(?TaskLock &$lock): void
 {
     TaskScheduler::unlock($lock);
+}
+
+define('TYPE_OF_NATIVE', 1);
+define('TYPE_OF_OBJECT', 2);
+
+function TypeOf($value, int $flags = 0): ?string
+{
+    switch (gettype($value)) {
+        case 'boolean' : return 'bool';
+        case 'integer' : return 'int';
+        case 'double'  : return 'float';
+        case 'float'   : return 'float';
+        case 'string'  : return 'string';
+        case 'array'   : return 'array';
+        case 'resource': return 'pointer';
+        case 'NULL'    : return 'null';
+        case 'object':
+            if ($flags & TYPE_OF_OBJECT) {
+                return get_class($value);
+            }
+
+            return 'object';
+    }
+
+    if (is_callable($value)) {
+        return 'closure';
+    }
+
+    return null;
+}
+
+function VarDumpBinary(string $string): void
+{
+    for ($i = 0; $i < strlen($string); $i++) {
+        var_dump(str_pad(decbin(hexdec(bin2hex($string[$i]))), 8, '0', STR_PAD_LEFT));
+    }
 }

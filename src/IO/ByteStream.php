@@ -3,15 +3,15 @@ namespace Orolyn\IO;
 
 use Orolyn\ArgumentOutOfRangeException;
 use Orolyn\Endian;
-use function Orolyn\Lang\Bool;
-use function Orolyn\Lang\Byte;
-use function Orolyn\Lang\Double;
-use function Orolyn\Lang\Float;
-use function Orolyn\Lang\Int8;
-use function Orolyn\Lang\Int16;
-use function Orolyn\Lang\Int32;
-use function Orolyn\Lang\Int64;
-use function Orolyn\Lang\String;
+use function Orolyn\Bool;
+use function Orolyn\Byte;
+use function Orolyn\Double;
+use function Orolyn\Float;
+use function Orolyn\Int8;
+use function Orolyn\Int16;
+use function Orolyn\Int32;
+use function Orolyn\Int64;
+use function Orolyn\String;
 use Orolyn\StandardObject;
 
 class ByteStream implements IInputStream, IOutputStream

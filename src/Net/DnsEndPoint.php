@@ -1,9 +1,6 @@
 <?php
 namespace Orolyn\Net;
 
-use function Orolyn\Lang\Int32;
-use function Orolyn\Lang\String;
-
 final class DnsEndPoint extends EndPoint
 {
     private $host;
@@ -28,7 +25,7 @@ final class DnsEndPoint extends EndPoint
 
     public function __toString(): string
     {
-        return String('%s:%s')->format($this->host, $this->port);
+        return sprintf('%s:%s', $this->host, $this->port);
     }
 
     /**

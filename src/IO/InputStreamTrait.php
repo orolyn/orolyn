@@ -1,18 +1,8 @@
 <?php
 namespace Orolyn\IO;
 
+use Orolyn\ByteConverter;
 use Orolyn\Endian;
-use function Orolyn\Lang\Bool;
-use function Orolyn\Lang\Double;
-use function Orolyn\Lang\Float;
-use function Orolyn\Lang\Int16;
-use function Orolyn\Lang\Int32;
-use function Orolyn\Lang\Int64;
-use function Orolyn\Lang\Int8;
-use function Orolyn\Lang\UnsignedInt16;
-use function Orolyn\Lang\UnsignedInt32;
-use function Orolyn\Lang\UnsignedInt64;
-use function Orolyn\Lang\UnsignedInt8;
 
 trait InputStreamTrait
 {
@@ -22,56 +12,56 @@ trait InputStreamTrait
 
     public function readInt8(): int
     {
-        return Int8($this->read(1))->getValue();
+        return ByteConverter::getInt8($this->read());
     }
 
     public function readInt16(): int
     {
-        return Int16($this->getEndian()->convert($this->read(2)))->getValue();
+        return ByteConverter::getInt16($this->read(2), $this->getEndian());
     }
 
     public function readInt32(): int
     {
-        return Int32($this->getEndian()->convert($this->read(4)))->getValue();
+        return ByteConverter::getInt32($this->read(4), $this->getEndian());
     }
 
     public function readInt64(): int
     {
-        return Int64($this->getEndian()->convert($this->read(8)))->getValue();
+        return ByteConverter::getInt64($this->read(8), $this->getEndian());
     }
 
     public function readUnsignedInt8(): int
     {
-        return UnsignedInt8($this->getEndian()->convert($this->read(1)))->getValue();
+        return ByteConverter::getUnsignedInt8($this->read());
     }
 
     public function readUnsignedInt16(): int
     {
-        return UnsignedInt16($this->getEndian()->convert($this->read(2)))->getValue();
+        return ByteConverter::getUnsignedInt16($this->read(2), $this->getEndian());
     }
 
     public function readUnsignedInt32(): int
     {
-        return UnsignedInt32($this->getEndian()->convert($this->read(4)))->getValue();
+        return ByteConverter::getUnsignedInt32($this->read(4), $this->getEndian());
     }
 
     public function readUnsignedInt64(): int
     {
-        return UnsignedInt64($this->getEndian()->convert($this->read(8)))->getValue();
+        return ByteConverter::getUnsignedInt64($this->read(8), $this->getEndian());
     }
 
     public function readFloat(): float
     {
-        return Float($this->getEndian()->convert($this->read(4)))->getValue();
+        return ByteConverter::getFloat($this->read(4), $this->getEndian());
     }
 
     public function readDouble(): float
     {
-        return Double($this->getEndian()->convert($this->read(8)))->getValue();
+        return ByteConverter::getDouble($this->read(8), $this->getEndian());
     }
 
     public function readBool(): bool
     {
-        return Bool($this->read(1))->getValue();
+        return ByteConverter::getBool($this->read());
     }
 }

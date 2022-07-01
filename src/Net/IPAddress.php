@@ -1,50 +1,63 @@
 <?php
 namespace Orolyn\Net;
 
+use Orolyn\ArgumentException;
+use Orolyn\ByteConverter;
+use Orolyn\FormatException;
 use Orolyn\IEquatable;
 use Orolyn\NotImplementedException;
-use function Orolyn\Lang\Int32;
-use function Orolyn\Lang\String;
-use function Orolyn\Lang\UnsignedInt8;
-use Orolyn\StandardObject;
+use ReflectionClass;
+use ReflectionException;
 
 final class IPAddress implements IEquatable
 {
-    private $value;
+    private string $address;
 
-    public function __construct(int $value)
+    public function __construct(string $address)
     {
-        $this->value = $value;
-    }
-
-    public static function parse(string $address): IPAddress
-    {
-        // TODO: extend this method
-
-        if (false !== strpos($address, ':')) {
-            throw new NotImplementedException('IPv6 not yet implemented');
+        if (false === inet_ntop($address)) {
+            throw new ArgumentException('$address is a bad IP address');
         }
 
-        $parts = String($address)->explode('.');
+        $this->address = $address;
+    }
 
-        $int = Int32(
-            UnsignedInt8((int)$parts[3])->getBytes() .
-            UnsignedInt8((int)$parts[2])->getBytes() .
-            UnsignedInt8((int)$parts[1])->getBytes() .
-            UnsignedInt8((int)$parts[0])->getBytes()
-        );
+    /**
+     * @param string $ipString
+     * @return IPAddress|null
+     */
+    public static function parse(string $ipString): null|IPAddress
+    {
+        if (false === $address = inet_pton($ipString)) {
+            return null;
+        }
 
-        return new IPAddress($int->getValue());
+        try {
+            /** @var IPAddress $ipAddress */
+            $ipAddress = (new ReflectionClass(IPAddress::class))->newInstanceWithoutConstructor();
+            $ipAddress->address = $address;
+        } catch (ReflectionException $exception) {
+            // N/A
+        }
+
+        return $ipAddress;
     }
 
     public function equals($value): bool
     {
-        return $value instanceof IPAddress && $value->value === $this->value;
+        return $value instanceof IPAddress && $value->address === $this->address;
     }
 
     public function hash(): int
     {
-        return $this->value;
+        if (4 === strlen($this->address)) {
+            return ByteConverter::getInt64($this->address);
+        }
+
+        $a = ByteConverter::getInt64(substr($this->address, 0, 8));
+        $b = ByteConverter::getInt64(substr($this->address, 8, 16));
+
+        return $a ^ $b;
     }
 
     /**
@@ -52,14 +65,12 @@ final class IPAddress implements IEquatable
      */
     public function toString(): string
     {
-        return String('%s.%s.%s.%s')->format(
-            UnsignedInt8($this->value >> 24),
-            UnsignedInt8($this->value >> 16),
-            UnsignedInt8($this->value >> 8),
-            UnsignedInt8($this->value)
-        );
+        return inet_ntop($this->address);
     }
 
+    /**
+     * @return string
+     */
     public function __toString(): string
     {
         return $this->toString();

@@ -2,12 +2,12 @@
 namespace Orolyn\Net\Sockets;
 
 use Orolyn\IO\File;
-use Orolyn\Lang\InternalCaller;
+use Orolyn\InternalCaller;
 use Orolyn\Net\IPEndPoint;
 use Orolyn\Net\ServerEndPoint;
 use Orolyn\Net\Sockets\Options\SecureOptions;
 use Orolyn\Net\UnixEndPoint;
-use function Orolyn\Lang\Suspend;
+use function Orolyn\Suspend;
 
 class SecureServerSocket extends ServerSocket
 {

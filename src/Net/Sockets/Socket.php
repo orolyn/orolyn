@@ -16,7 +16,7 @@ use Orolyn\Net\Sockets\Options\SocketOptions;
 use Orolyn\Net\UnixEndPoint;
 use Orolyn\NotImplementedException;
 use Orolyn\Timer;
-use function Orolyn\Lang\Suspend;
+use function Orolyn\Suspend;
 
 class Socket implements IInputStream, IOutputStream
 {

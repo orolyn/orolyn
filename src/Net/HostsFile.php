@@ -7,8 +7,8 @@ use Orolyn\Collection\Dictionary;
 use Orolyn\Collection\IList;
 use Orolyn\IO\ByteStream;
 use Orolyn\IO\File;
+use Orolyn\IO\FileNotFoundException;
 use Orolyn\IO\StreamWriter;
-use Orolyn\NotImplementedException;
 
 class HostsFile
 {
@@ -34,9 +34,7 @@ class HostsFile
 
         foreach (preg_split('/\r?\n/', $contents) as $line) {
             if (preg_match('/^\s*([^#\s]+)\s+([^#]+\s*)$/', $line, $match)) {
-                try {
-                    $ip = IPAddress::parse($match[1]);
-                } catch (NotImplementedException $exception) {
+                if (false === $ip = IPAddress::parse($match[1])) {
                     continue;
                 }
 
@@ -65,6 +63,7 @@ class HostsFile
 
     /**
      * @return HostsFile
+     * @throws FileNotFoundException
      */
     public static function getDefault(): HostsFile
     {

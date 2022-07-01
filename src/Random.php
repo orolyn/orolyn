@@ -2,8 +2,8 @@
 namespace Orolyn;
 
 use Orolyn\Primitive\TypeInt64;
-use function Orolyn\Lang\Int32;
-use function Orolyn\Lang\String;
+use function Orolyn\Int32;
+use function Orolyn\String;
 
 final class Random
 {

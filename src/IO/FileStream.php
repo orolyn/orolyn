@@ -5,9 +5,7 @@ use Orolyn\ArgumentException;
 use Orolyn\ArgumentOutOfRangeException;
 use Orolyn\Math;
 use Orolyn\NotSupportedException;
-use Orolyn\Primitive\TypeString;
-use function Orolyn\Lang\String;
-use function Orolyn\Lang\Suspend;
+use function Orolyn\Suspend;
 
 class FileStream implements IInputStream, IOutputStream
 {

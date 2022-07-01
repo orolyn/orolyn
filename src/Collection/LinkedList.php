@@ -5,7 +5,7 @@ use Orolyn\ArgumentException;
 use Orolyn\ArgumentOutOfRangeException;
 use Orolyn\StandardObject;
 use SplDoublyLinkedList;
-use function Orolyn\Lang\TypeOf;
+use function Orolyn\TypeOf;
 
 class LinkedList implements IList
 {

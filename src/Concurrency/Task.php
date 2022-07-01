@@ -10,7 +10,7 @@ use Orolyn\Collection\ArrayList;
 use Orolyn\Collection\HashSet;
 use Throwable;
 use Orolyn\InvalidOperationException;
-use function Orolyn\Lang\Suspend;
+use function Orolyn\Suspend;
 /**
  * @template T
  */

@@ -4,13 +4,13 @@ namespace Orolyn\Net\Sockets;
 use Exception;
 use Orolyn\InvalidOperationException;
 use Orolyn\IO\File;
-use Orolyn\Lang\InternalCaller;
+use Orolyn\InternalCaller;
 use Orolyn\Net\IPEndPoint;
 use Orolyn\Net\ServerEndPoint;
 use Orolyn\Net\Sockets\Options\ServerSocketOptions;
 use Orolyn\Net\Sockets\Options\SocketOptions;
 use Orolyn\Net\UnixEndPoint;
-use function Orolyn\Lang\Suspend;
+use function Orolyn\Suspend;
 
 class ServerSocket
 {

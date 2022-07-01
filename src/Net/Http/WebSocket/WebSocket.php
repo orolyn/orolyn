@@ -16,10 +16,10 @@ use Orolyn\Net\Http\HttpResponse;
 use Orolyn\Net\Sockets\Socket;
 use Orolyn\Net\Sockets\SocketNotConnectedException;
 use Orolyn\Timer;
-use function Orolyn\Lang\Lock;
-use function Orolyn\Lang\Suspend;
-use function Orolyn\Lang\Unlock;
-use function Orolyn\Lang\UnsignedInt16;
+use function Orolyn\Lock;
+use function Orolyn\Suspend;
+use function Orolyn\Unlock;
+use function Orolyn\UnsignedInt16;
 
 class WebSocket
 {

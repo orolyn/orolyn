@@ -1,8 +1,8 @@
 <?php
 namespace Orolyn\Net;
 
-use function Orolyn\Lang\Int32;
-use function Orolyn\Lang\String;
+use function Orolyn\Int32;
+use function Orolyn\String;
 
 final class UnixEndPoint extends EndPoint implements ServerEndPoint
 {

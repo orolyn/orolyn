@@ -1,7 +1,7 @@
 <?php
 namespace Orolyn\IO;
 
-use function Orolyn\Lang\Suspend;
+use function Orolyn\Suspend;
 
 class File
 {
@@ -15,6 +15,11 @@ class File
         $this->path = $path;
     }
 
+    /**
+     * @param string $path
+     * @return string
+     * @throws FileNotFoundException
+     */
     public static function readAllText(string $path): string
     {
         $stream = new FileStream(new File($path));

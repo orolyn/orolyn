@@ -1,14 +1,16 @@
 <?php
 namespace Orolyn\Net;
 
+use Orolyn\ByteConverter;
 use Orolyn\Collection\ArrayList;
 use Orolyn\Endian;
+use Orolyn\IO\FileNotFoundException;
+use Orolyn\Primitive\TypeString;
 use Orolyn\Net\Sockets\DatagramPacket;
 use Orolyn\Net\Sockets\DatagramSocket;
 use Orolyn\SecureRandom;
-use function Orolyn\Lang\String;
-use function Orolyn\Lang\UnsignedInt16;
-use Orolyn\Primitive\TypeString;
+use function Orolyn\String;
+use function Orolyn\UnsignedInt16;
 
 class DnsResolver
 {
@@ -35,8 +37,16 @@ class DnsResolver
 
     public static function lookup(string $host): ?IPHostEntry
     {
-        // TODO: implement local checks
-        // TODO: see if OS checks can be used.
+        try {
+            $hostsFile = HostsFile::getDefault();
+            $ipAddresses = $hostsFile->getIPAddressesByHost($host);
+
+            if ($ipAddresses->count() > 0) {
+                return new IPHostEntry($host, $ipAddresses);
+            }
+        } catch (FileNotFoundException $exception) {
+            // Do nothing, move on to DNS provider.
+        }
 
         $socket = new DatagramSocket();
         $socket->connect(new IPEndPoint(IPAddress::parse('8.8.8.8'), 53));
@@ -45,7 +55,7 @@ class DnsResolver
         $packet->setEndian(Endian::BigEndian);
 
         $header = self::createPacketHeader();
-        $header->id = $id = UnsignedInt16(SecureRandom::generateBytes(2))->getValue();
+        $header->id = $id = ByteConverter::getUnsignedInt16(SecureRandom::generateBytes(2));
         $header->qdCount = 1;
         $header->rd = 1;
         $header->opcode = self::OPCODE_QUERY;
@@ -136,7 +146,7 @@ class DnsResolver
                 public ?int $class;
             };
 
-            $question->name  = (string)TypeString::join('.', self::parseLabels($packet));
+            $question->name  = self::parseLabels($packet)->join('.');
             $question->type  = $packet->readUnsignedInt16();
             $question->class = $packet->readUnsignedInt16();
 
@@ -160,7 +170,7 @@ class DnsResolver
                 public mixed $rdata;
             };
 
-            $record->name  = (string)TypeString::join('.', self::parseLabels($packet));
+            $record->name  = self::parseLabels($packet)->join('.');
             $record->type  = $packet->readUnsignedInt16();
             $record->class = $packet->readUnsignedInt16();
             $record->ttl   = $packet->readUnsignedInt32();
@@ -176,11 +186,11 @@ class DnsResolver
                 case self::TYPE_CNAME:
                 case self::TYPE_PTR:
                 case self::TYPE_SOA:
-                    $record->rdata = (string)TypeString::join('.', self::parseLabels($packet));
+                    $record->rdata = self::parseLabels($packet)->join('.');
                     break;
                 case self::TYPE_MX:
                     $record->pref = $packet->readUnsignedInt16();
-                    $record->rdata = (string)TypeString::join('.', self::parseLabels($packet));
+                    $record->rdata = self::parseLabels($packet)->join('.');
                     break;
                 default:
                     $record->rdata = $packet->read($rdLength);
