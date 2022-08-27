@@ -10,58 +10,72 @@ trait OutputStreamTrait
 
     abstract public function write(string $bytes): void;
 
-    public function writeInt8($value): void
+    public function writeInt8(int $value): void
     {
         $this->write(ByteConverter::getBinaryInt8($value));
     }
 
-    public function writeInt16($value): void
+    public function writeInt16(int $value): void
     {
         $this->write(ByteConverter::getBinaryInt16($value, $this->getEndian()));
     }
 
-    public function writeInt32($value): void
+    public function writeInt24(int $value): void
+    {
+        $this->write(ByteConverter::getBinaryInt24($value, $this->getEndian()));
+    }
+
+    public function writeInt32(int $value): void
     {
         $this->write(ByteConverter::getBinaryInt32($value, $this->getEndian()));
     }
 
-    public function writeInt64($value): void
+    public function writeInt64(int $value): void
     {
         $this->write(ByteConverter::getBinaryInt64($value, $this->getEndian()));
     }
 
-    public function writeUnsignedInt8($value): void
+    public function writeUnsignedInt8(int $value): void
     {
         $this->write(ByteConverter::getBinaryUnsignedInt8($value, $this->getEndian()));
     }
 
-    public function writeUnsignedInt16($value): void
+    public function writeUnsignedInt16(int $value): void
     {
         $this->write(ByteConverter::getBinaryUnsignedInt16($value, $this->getEndian()));
     }
 
-    public function writeUnsignedInt32($value): void
+    public function writeUnsignedInt24(int $value): void
+    {
+        $this->write(ByteConverter::getBinaryUnsignedInt24($value, $this->getEndian()));
+    }
+
+    public function writeUnsignedInt32(int $value): void
     {
         $this->write(ByteConverter::getBinaryUnsignedInt32($value, $this->getEndian()));
     }
 
-    public function writeUnsignedInt64($value): void
+    public function writeUnsignedInt64(int $value): void
     {
         $this->write(ByteConverter::getBinaryUnsignedInt64($value, $this->getEndian()));
     }
 
-    public function writeFloat($value): void
+    public function writeFloat(float $value): void
     {
         $this->write(ByteConverter::getBinaryFloat($value, $this->getEndian()));
     }
 
-    public function writeDouble($value): void
+    public function writeDouble(float $value): void
     {
         $this->write(ByteConverter::getBinaryDouble($value, $this->getEndian()));
     }
 
-    public function writeBool($value): void
+    public function writeBool(bool $value): void
     {
         $this->write(ByteConverter::getBinaryBool($value));
+    }
+
+    public function flush(): void
+    {
     }
 }

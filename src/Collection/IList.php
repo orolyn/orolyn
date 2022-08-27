@@ -27,7 +27,7 @@ interface IList extends ICollection, ArrayAccess
      * @param string $delimiter
      * @return string
      */
-    public function join(string $delimiter): string;
+    public function join(string $delimiter = ''): string;
 
     /**
      * @param callable $func

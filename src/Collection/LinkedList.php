@@ -161,7 +161,7 @@ class LinkedList implements IList
     /**
      * @inheritdoc
      */
-    public function join(string $delimiter): string
+    public function join(string $delimiter = ''): string
     {
         $string = '';
         $i = 0;

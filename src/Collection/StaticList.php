@@ -14,7 +14,7 @@ use function Orolyn\TypeOf;
  */
 class StaticList implements IList
 {
-    private SplFixedArray $source;
+    protected SplFixedArray $source;
     private int $length;
 
     /**
@@ -161,7 +161,7 @@ class StaticList implements IList
     /**
      * @inheritdoc
      */
-    public function join(string $delimiter): string
+    public function join(string $delimiter = ''): string
     {
         return implode($delimiter, $this->source->toArray());
     }

@@ -86,7 +86,7 @@ class EmptyList implements IList
     /**
      * @inheritdoc
      */
-    public function join(string $delimiter): string
+    public function join(string $delimiter = ''): string
     {
         return '';
     }

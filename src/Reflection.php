@@ -4,6 +4,7 @@ namespace Orolyn;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
+use ReflectionMethod;
 
 class Reflection
 {
@@ -24,6 +25,27 @@ class Reflection
         }
 
         return $reflections[$class] = new ReflectionClass($class);
+    }
+
+    /**
+     * @param string|object $class
+     * @param string $method
+     * @return ReflectionMethod
+     * @throws ReflectionException
+     */
+    public static function getReflectionMethod(string|object $class, string $method): ReflectionMethod
+    {
+        static $reflections;
+
+        $reflections = $reflections ?? [];
+        $class = is_string($class) ? $class : get_class($class);
+        $classMethod = $class . '::' . $method;
+
+        if (array_key_exists($classMethod, $reflections)) {
+            return $reflections[$classMethod];
+        }
+
+        return $reflections[$classMethod] = new ReflectionMethod($class, $method);
     }
 
     public static function classInstanceOf(string $className, string $inheritedClassName): bool

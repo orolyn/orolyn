@@ -3,6 +3,9 @@ namespace Orolyn\Net\Sockets\Options;
 
 use Orolyn\IO\File;
 
+/**
+ * @property ?string $peerName
+ */
 class SecureOptions extends Options
 {
     /**

@@ -4,6 +4,7 @@ namespace Orolyn\Net;
 use Orolyn\ByteConverter;
 use Orolyn\Collection\ArrayList;
 use Orolyn\Endian;
+use Orolyn\Environment;
 use Orolyn\IO\FileNotFoundException;
 use Orolyn\Primitive\TypeString;
 use Orolyn\Net\Sockets\DatagramPacket;
@@ -35,7 +36,7 @@ class DnsResolver
     private const RCODE_NOT_IMPLEMENTED = 4;
     private const RCODE_REFUSED = 5;
 
-    public static function lookup(string $host): ?IPHostEntry
+    public static function lookup(string $host, string $dns = Environment::DEFAULT_DNS): ?IPHostEntry
     {
         try {
             $hostsFile = HostsFile::getDefault();
@@ -49,7 +50,7 @@ class DnsResolver
         }
 
         $socket = new DatagramSocket();
-        $socket->connect(new IPEndPoint(IPAddress::parse('8.8.8.8'), 53));
+        $socket->connect(new IPEndPoint(IPAddress::parse($dns), 53));
 
         $packet = new DatagramPacket();
         $packet->setEndian(Endian::BigEndian);
@@ -79,8 +80,8 @@ class DnsResolver
         $packet->writeUnsignedInt16($header->nsCount);
         $packet->writeUnsignedInt16($header->arCount);
 
-        foreach (String($host)->explode('.') as $label) {
-            $packet->writeUnsignedInt8(String($label)->getLength());
+        foreach (explode('.', $host) as $label) {
+            $packet->writeUnsignedInt8(strlen($label));
             $packet->write($label);
         }
 
@@ -108,6 +109,7 @@ class DnsResolver
         $header->aa     = ($flags >> 10) & 0x01;
         $header->opcode = ($flags >> 11) & 0x0F;
         $header->qr     = ($flags >> 15) & 0x01;
+
 
         $header->qdCount = $packet->readUnsignedInt16();
         $header->anCount = $packet->readUnsignedInt16();

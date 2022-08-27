@@ -118,9 +118,7 @@ final class TaskScheduler
      */
     public static function suspend(float $delay = 0): void
     {
-        $currentFiber = Fiber::getCurrent();
-
-        if ($currentFiber) {
+        if (Fiber::getCurrent()) {
             Fiber::suspend(new TaskSuspensionTime($delay, microtime(true)));
         } else {
             self::sleep($delay);

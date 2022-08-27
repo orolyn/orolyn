@@ -4,6 +4,8 @@ namespace Orolyn;
 
 class ByteConverter
 {
+    private const MAX_INT_24 = (2**23)-1;
+
     public static function getInt8(string|int $value): int
     {
         if (is_int($value)) {
@@ -20,6 +22,25 @@ class ByteConverter
         }
 
         return (int)unpack('s', self::getEndian($endian)->convert($value))[1];;
+    }
+
+    public static function getInt24(string|int $value, ?Endian $endian = null): int
+    {
+        if (is_int($value)) {
+            return ($value & 0xFFFFFF) | ((($value & 0xFFFFFF) >> 23) * (((2 ** 40) - 1) << 24));
+        }
+
+        if (self::getEndian($endian) === Endian::BigEndian) {
+            $int = (ord($value[0]) << 16) |  (ord($value[1]) << 8) | ord($value[2]);
+        } else {
+            $int = (ord($value[2]) << 16) |  (ord($value[1]) << 8) | ord($value[0]);
+        }
+
+        if ($int <= self::MAX_INT_24) {
+            return $int;
+        }
+
+        return (-self::MAX_INT_24 - 2) + ($int - self::MAX_INT_24);
     }
 
     public static function getInt32(string|int $value, ?Endian $endian = null): int
@@ -56,6 +77,19 @@ class ByteConverter
         }
 
         return (int)unpack('S', self::getEndian($endian)->convert($value))[1];
+    }
+
+    public static function getUnsignedInt24(string|int $value, ?Endian $endian = null): int
+    {
+        if (is_int($value)) {
+            return (($value) & 0xFFFFFF);
+        }
+
+        if (self::getEndian($endian) === Endian::BigEndian) {
+            return (ord($value[0]) << 16) |  (ord($value[1]) << 8) | ord($value[2]);
+        } else {
+            return (ord($value[2]) << 16) |  (ord($value[1]) << 8) | ord($value[0]);
+        }
     }
 
     public static function getUnsignedInt32(string|int $value, ?Endian $endian = null): int
@@ -113,6 +147,15 @@ class ByteConverter
         return self::getEndian($endian)->convert(pack('s', $value));
     }
 
+    public static function getBinaryInt24(int $value, ?Endian $endian = null): string
+    {
+        if (self::getEndian($endian) === Endian::BigEndian) {
+            return chr(($value >> 16) & 0xFF) . chr(($value >> 8) & 0xFF) . chr($value & 0xFF);
+        } else {
+            return chr($value & 0xFF) . chr(($value >> 8) & 0xFF) . chr(($value >> 16) & 0xFF);
+        }
+    }
+
     public static function getBinaryInt32(int $value, ?Endian $endian = null): string
     {
         return self::getEndian($endian)->convert(pack('l', $value));
@@ -131,6 +174,15 @@ class ByteConverter
     public static function getBinaryUnsignedInt16(int $value, ?Endian $endian = null): string
     {
         return self::getEndian($endian)->convert(pack('S', $value));
+    }
+
+    public static function getBinaryUnsignedInt24(int $value, ?Endian $endian = null): string
+    {
+        if (self::getEndian($endian) === Endian::BigEndian) {
+            return chr(($value >> 16) & 0xFF) . chr(($value >> 8) & 0xFF) . chr($value & 0xFF);
+        } else {
+            return chr($value & 0xFF) . chr(($value >> 8) & 0xFF) . chr(($value >> 16) & 0xFF);
+        }
     }
 
     public static function getBinaryUnsignedInt32(int $value, ?Endian $endian = null): string
@@ -158,7 +210,7 @@ class ByteConverter
         return $value ? "\x01" : "\x00";
     }
 
-    private static function getEndian(?Endian $value): Endian
+    private static function getEndian(?Endian $endian): Endian
     {
         return $endian ?? Endian::getDefault();
     }

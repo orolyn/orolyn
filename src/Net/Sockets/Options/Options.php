@@ -8,6 +8,10 @@ class Options implements IteratorAggregate
 {
     protected array $options = [];
 
+    final public function __construct()
+    {
+    }
+
     /**
      * @return static
      */

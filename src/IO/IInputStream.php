@@ -78,6 +78,13 @@ interface IInputStream
     public function read(int $length = 1): string;
 
     /**
+     * Read a string until NULL byte, string does not included the NULL byte.
+     *
+     * @return string
+     */
+    public function readNullTerminatedString(): string;
+
+    /**
      * Read a single 8-bit integer.
      *
      * @return int
@@ -90,6 +97,13 @@ interface IInputStream
      * @return int
      */
     public function readInt16(): int;
+
+    /**
+     * Read a single 24-bit integer.
+     *
+     * @return int
+     */
+    public function readInt24(): int;
 
     /**
      * Read a single 32-bit integer.
@@ -118,6 +132,13 @@ interface IInputStream
      * @return int
      */
     public function readUnsignedInt16(): int;
+
+    /**
+     * Read a single 24-bit unsigned integer.
+     *
+     * @return int
+     */
+    public function readUnsignedInt24(): int;
 
     /**
      * Read a single 32-bit unsigned integer.

@@ -63,6 +63,20 @@ class ArrayList implements IList
     }
 
     /**
+     * @return ImmutableList
+     */
+    public function copyImmutableList(): ImmutableList
+    {
+        $copy = [];
+
+        foreach ($this->source as $item) {
+            $copy[] = $item->value;
+        }
+
+        return new ImmutableList($copy);
+    }
+
+    /**
      * @inheritdoc
      */
     public function offsetExists(mixed $offset): bool
@@ -130,11 +144,15 @@ class ArrayList implements IList
      */
     public function indexOf(mixed $item): int
     {
-        if (false === $index = $this->source->find(new Item($item))) {
-            return -1;
+        $count = $this->source->count();
+
+        for ($i = 0; $i < $count; $i++) {
+            if ($this->source[$i]->equals($item)) {
+                return $i;
+            }
         }
 
-        return $index;
+        return -1;
     }
 
     /**
@@ -148,9 +166,9 @@ class ArrayList implements IList
     /**
      * @inheritdoc
      */
-    public function join(?string $delimiter = null): string
+    public function join(string $delimiter = ''): string
     {
-        return $this->source->join($delimiter);
+        return implode($delimiter, $this->source->toArray());
     }
 
     /**
@@ -166,5 +184,16 @@ class ArrayList implements IList
         );
 
         return $mapped;
+    }
+
+    /**
+     * @param callable $func
+     * @return void
+     */
+    public function forEach (callable $func): void
+    {
+        foreach ($this->source as $i => $item) {
+            $func($item, $i);
+        }
     }
 }

@@ -3,6 +3,7 @@ namespace Orolyn\Net;
 
 use Orolyn\ArgumentException;
 use Orolyn\ByteConverter;
+use Orolyn\Endian;
 use Orolyn\FormatException;
 use Orolyn\IEquatable;
 use Orolyn\NotImplementedException;
@@ -13,8 +14,12 @@ final class IPAddress implements IEquatable
 {
     private string $address;
 
-    public function __construct(string $address)
+    public function __construct(int|string $address)
     {
+        if (is_int($address)) {
+            $address = ByteConverter::getBinaryInt32($address, Endian::BigEndian);
+        }
+
         if (false === inet_ntop($address)) {
             throw new ArgumentException('$address is a bad IP address');
         }
@@ -48,7 +53,7 @@ final class IPAddress implements IEquatable
         return $value instanceof IPAddress && $value->address === $this->address;
     }
 
-    public function hash(): int
+    public function getHashCode(): int
     {
         if (4 === strlen($this->address)) {
             return ByteConverter::getInt64($this->address);

@@ -8,6 +8,7 @@ use Closure;
 use Orolyn\AggregateException;
 use Orolyn\Collection\ArrayList;
 use Orolyn\Collection\HashSet;
+use Orolyn\Collection\Stack;
 use Throwable;
 use Orolyn\InvalidOperationException;
 use function Orolyn\Suspend;
@@ -16,6 +17,11 @@ use function Orolyn\Suspend;
  */
 final class Task
 {
+    /**
+     * @var Stack<Task>|null
+     */
+    private static ?Stack $taskStack = null;
+
     /**
      * @var Fiber|null
      */
@@ -64,6 +70,20 @@ final class Task
     {
         $this->callback = $callback(...);
         $this->args = $args;
+    }
+
+    /**
+     * Returns the current Task, or null if no task is running.
+     *
+     * @return Task|null
+     */
+    public static function getCurrentTask(): ?Task
+    {
+        if (null === self::$taskStack || self::$taskStack->isEmpty()) {
+            return null;
+        }
+
+        return self::$taskStack->peek();
     }
 
     /**
@@ -161,6 +181,12 @@ final class Task
             return;
         }
 
+        if (null === self::$taskStack) {
+            self::$taskStack = new Stack();
+        }
+
+        self::$taskStack->push($this);
+
         try {
             $this->suspensionTime = null;
 
@@ -180,6 +206,8 @@ final class Task
         } catch (Throwable $exception) {
             $this->completed = true;
             $this->exception = new AggregateException($exception);
+        } finally {
+            self::$taskStack->pop();
         }
 
         if ($this->fiber->isTerminated()) {

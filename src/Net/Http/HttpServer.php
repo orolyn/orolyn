@@ -9,6 +9,7 @@ use Orolyn\IO\ByteStream;
 use Orolyn\Net\Http\Parser\Parser;
 use Orolyn\Net\ServerEndPoint;
 use Orolyn\Net\Sockets\ServerSocket;
+use Orolyn\Net\Sockets\SocketContext;
 use Orolyn\Net\Sockets\SocketNotConnectedException;
 
 class HttpServer
@@ -17,6 +18,12 @@ class HttpServer
      * @var ServerSocket|null
      */
     protected ?ServerSocket $server = null;
+
+    public function __construct(
+        private SocketContext $context = new SocketContext(),
+        private bool $secure = false
+    ) {
+    }
 
     /**
      * @return bool
@@ -27,11 +34,12 @@ class HttpServer
     }
 
     /**
+     * @param ServerEndPoint $endPoint
      * @return void
      */
     public function listen(ServerEndPoint $endPoint): void
     {
-        $this->server = new ServerSocket();
+        $this->server = new ServerSocket($this->context);
         $this->server->listen($endPoint);
     }
 
@@ -47,6 +55,10 @@ class HttpServer
 
         $socket = $this->server->accept();
         $socket->setEndian(Endian::BigEndian);
+
+        if ($this->secure) {
+            $socket->enableTLS(true);
+        }
 
         try {
             try {

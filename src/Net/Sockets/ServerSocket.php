@@ -4,12 +4,13 @@ namespace Orolyn\Net\Sockets;
 use Exception;
 use Orolyn\InvalidOperationException;
 use Orolyn\IO\File;
-use Orolyn\InternalCaller;
 use Orolyn\Net\IPEndPoint;
 use Orolyn\Net\ServerEndPoint;
+use Orolyn\Net\Sockets\Options\SecureOptions;
 use Orolyn\Net\Sockets\Options\ServerSocketOptions;
 use Orolyn\Net\Sockets\Options\SocketOptions;
 use Orolyn\Net\UnixEndPoint;
+use Orolyn\Reflection;
 use function Orolyn\Suspend;
 
 class ServerSocket
@@ -68,6 +69,10 @@ class ServerSocket
                 stream_context_set_option($this->handle, 'socket', $option, $value);
             }
 
+            foreach ($this->context->getOptions(SecureOptions::class) as $name => $value) {
+                stream_context_set_option($this->handle, 'ssl', $name, $value);
+            }
+
             if ($this->endPoint instanceof UnixEndPoint) {
                 $this->unixFile = new File($this->endPoint->getPath());
                 $this->unixFile = $this->unixFile->getAbsoluteFile();
@@ -100,9 +105,9 @@ class ServerSocket
 
         // TODO: handle this if failed
         $handle = stream_socket_accept($this->handle);
-
         $socket = new Socket();
-        InternalCaller::callMethod($socket, 'initialize', $handle);
+
+        Reflection::getReflectionMethod(Socket::class, 'initialize')->invoke($socket, $handle, true);
 
         return $socket;
     }
