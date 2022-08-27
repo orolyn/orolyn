@@ -130,11 +130,15 @@ class ArrayList implements IList
      */
     public function indexOf(mixed $item): int
     {
-        if (false === $index = $this->source->find(new Item($item))) {
-            return -1;
+        $count = $this->source->count();
+
+        for ($i = 0; $i < $count; $i++) {
+            if ($this->source[$i]->equals($item)) {
+                return $i;
+            }
         }
 
-        return $index;
+        return -1;
     }
 
     /**
@@ -150,7 +154,7 @@ class ArrayList implements IList
      */
     public function join(?string $delimiter = null): string
     {
-        return $this->source->join($delimiter);
+        return implode($delimiter, $this->source->toArray());
     }
 
     /**
@@ -166,5 +170,16 @@ class ArrayList implements IList
         );
 
         return $mapped;
+    }
+
+    /**
+     * @param callable $func
+     * @return void
+     */
+    public function forEach (callable $func): void
+    {
+        foreach ($this->source as $i => $item) {
+            $func($item, $i);
+        }
     }
 }

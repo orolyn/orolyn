@@ -32,4 +32,15 @@ class ImmutableList extends StaticList
     public function offsetUnset(mixed $offset): void
     {
     }
+
+    /**
+     * @param callable $func
+     * @return void
+     */
+    public function forEach (callable $func): void
+    {
+        foreach ($this->source as $i => $item) {
+            $func($item, $i);
+        }
+    }
 }

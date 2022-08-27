@@ -1,9 +1,9 @@
 <?php
 namespace Orolyn\IO;
 
-use Exception;
+use RuntimeException;
 
-class IOException extends Exception
+class IOException extends RuntimeException
 {
 
 }

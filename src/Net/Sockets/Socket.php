@@ -4,31 +4,31 @@ namespace Orolyn\Net\Sockets;
 use Orolyn\ArgumentOutOfRangeException;
 use Orolyn\IO\Buffer;
 use Orolyn\IO\EndianTrait;
-use Orolyn\IO\IInputStream;
 use Orolyn\IO\InputStreamTrait;
-use Orolyn\IO\IOutputStream;
+use Orolyn\IO\IStream;
 use Orolyn\IO\OutputStreamTrait;
 use Orolyn\Net\DnsEndPoint;
 use Orolyn\Net\DnsResolver;
 use Orolyn\Net\EndPoint;
 use Orolyn\Net\IPEndPoint;
+use Orolyn\Net\Sockets\Options\SecureOptions;
 use Orolyn\Net\Sockets\Options\SocketOptions;
 use Orolyn\Net\UnixEndPoint;
 use Orolyn\NotImplementedException;
 use Orolyn\Timer;
 use function Orolyn\Suspend;
 
-class Socket implements IInputStream, IOutputStream
+class Socket implements IStream
 {
+    use EndianTrait;
+    use InputStreamTrait;
+    use OutputStreamTrait;
+
     private const I_BUFFER_SIZE = 1024 ** 3;
     private const O_BUFFER_SIZE = 1024 ** 3;
 
     private const SELECT_R = 1;
     private const SELECT_W = 1 << 1;
-
-    use EndianTrait;
-    use InputStreamTrait;
-    use OutputStreamTrait;
 
     protected SocketContext $context;
     protected ?EndPoint $endPoint = null;
@@ -36,6 +36,7 @@ class Socket implements IInputStream, IOutputStream
     protected mixed $handle = null;
     private Buffer $iBuf;
     private Buffer $oBuf;
+    private bool $isServer = false;
 
     /**
      * @param SocketContext|null $context
@@ -74,6 +75,55 @@ class Socket implements IInputStream, IOutputStream
             $this->tryConnectToEndPoint($endPoint, $timeout, true);
         } else {
             throw new NotImplementedException('Unknown endpoint type');
+        }
+    }
+
+    /**
+     * @param bool $enable
+     * @return void
+     */
+    public function enableTLS(bool $enable): void
+    {
+        if ($this->isServer) {
+            $method =
+                STREAM_CRYPTO_METHOD_TLSv1_0_SERVER |
+                STREAM_CRYPTO_METHOD_TLSv1_1_SERVER |
+                STREAM_CRYPTO_METHOD_TLSv1_2_SERVER;
+        } else {
+            $method =
+                STREAM_CRYPTO_METHOD_TLSv1_0_CLIENT |
+                STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT |
+                STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+        }
+
+        if ($enable) {
+            $secureOptions = $this->context->getOptions(SecureOptions::class);
+
+            foreach ($this->context->getOptions(SecureOptions::class) as $name => $value) {
+                stream_context_set_option($this->handle, 'ssl', $name, $value);
+            }
+
+            if ($this->endPoint instanceof DnsEndPoint && null === $secureOptions->getPeerName()) {
+                stream_context_set_option($this->handle, 'ssl', 'peer_name', $this->endPoint->getHost());
+            }
+
+            while (0 === $result = @stream_socket_enable_crypto($this->handle, true, $method)) {
+                Suspend();
+            }
+
+            if (false === $result) {
+                $error = error_get_last()['message'];
+
+                if (false !== $pos = strpos($error, '): ')) {
+                    $error = substr($error, $pos + 3);
+                }
+
+                throw new SocketException($error);
+            }
+        } else {
+            while (0 === @stream_socket_enable_crypto($this->handle, false)) {
+                Suspend();
+            }
         }
     }
 
@@ -121,7 +171,7 @@ class Socket implements IInputStream, IOutputStream
             return false;
         }
 
-        $this->initialize($handle);
+        $this->initialize($handle, false);
 
         return true;
     }
@@ -133,10 +183,11 @@ class Socket implements IInputStream, IOutputStream
      * @return void
      * @throws SocketException
      */
-    protected function initialize($handle): void
+    protected function initialize($handle, bool $isServer): void
     {
         $this->handle = $handle;
         $this->connected = true;
+        $this->isServer = $isServer;
 
         if (!stream_set_blocking($this->handle, false)) {
             $this->throwLastError();

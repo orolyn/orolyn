@@ -31,7 +31,7 @@ class SocketContext
      * @param class-string<T> $className
      * @return T|null
      */
-    public function getOptions(string $className): ?Options
+    public function getOptions(string $className): Options
     {
         if (!Reflection::classInstanceOf($className, Options::class)) {
             throw new ArgumentException('Invalid options class name.');
@@ -41,6 +41,6 @@ class SocketContext
             return $options;
         }
 
-        return new Options();
+        return new $className();
     }
 }

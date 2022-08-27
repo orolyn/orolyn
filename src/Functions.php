@@ -1,13 +1,15 @@
 <?php
 namespace Orolyn;
 
-use Orolyn\ArgumentException;
 use Orolyn\Collection\ArrayList;
+use Orolyn\Concurrency\Coroutine;
 use Orolyn\Concurrency\Task;
 use Orolyn\Concurrency\TaskLock;
 use Orolyn\Concurrency\TaskScheduler;
 
 /**
+ * Creates and starts a task.
+ *
  * @param callable $callback
  * @return Task
  */

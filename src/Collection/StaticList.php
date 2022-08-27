@@ -14,7 +14,7 @@ use function Orolyn\TypeOf;
  */
 class StaticList implements IList
 {
-    private SplFixedArray $source;
+    protected SplFixedArray $source;
     private int $length;
 
     /**

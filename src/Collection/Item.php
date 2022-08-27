@@ -50,6 +50,10 @@ class Item implements Hashable
             return $this->value->getHashCode();
         }
 
+        if (is_object($this->value)) {
+            return spl_object_id($this->value);
+        }
+
         return $this->value;
     }
 

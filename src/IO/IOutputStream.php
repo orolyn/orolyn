@@ -24,23 +24,29 @@ interface IOutputStream
      */
     public function write(string $bytes): void;
 
-    public function writeInt8($value): void;
+    public function writeInt8(int $value): void;
 
-    public function writeInt16($value): void;
+    public function writeInt16(int$value): void;
 
-    public function writeInt32($value): void;
+    public function writeInt24(int$value): void;
 
-    public function writeUnsignedInt8($value): void;
+    public function writeInt32(int$value): void;
 
-    public function writeUnsignedInt16($value): void;
+    public function writeUnsignedInt8(int$value): void;
 
-    public function writeUnsignedInt32($value): void;
+    public function writeUnsignedInt16(int$value): void;
 
-    public function writeUnsignedInt64($value): void;
+    public function writeUnsignedInt24(int$value): void;
 
-    public function writeFloat($value): void;
+    public function writeUnsignedInt32(int$value): void;
 
-    public function writeDouble($value): void;
+    public function writeUnsignedInt64(int$value): void;
 
-    public function writeBool($value): void;
+    public function writeFloat(float $value): void;
+
+    public function writeDouble(float$value): void;
+
+    public function writeBool(bool $value): void;
+
+    public function flush(): void;
 }

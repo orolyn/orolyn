@@ -1,11 +1,12 @@
 <?php
 
-namespace Orolyn\Net\Http;
+namespace Orolyn\Net;
 
 class Uri
 {
     private ?string $scheme = null;
     private ?string $user = null;
+    private ?string $pass = null;
     private ?string $host = null;
     private ?int $port = null;
     private ?string $path = null;
@@ -31,10 +32,7 @@ class Uri
         $uri->fragment = $components['fragment'] ?? null;
 
         $uri->user = $components['user'] ?? null;
-
-        if ($uri->user) {
-            $uri->user .= $components['pass'] ? ':' . $components['user'] : null;
-        }
+        $uri->pass = $components['pass'] ?? null;
 
         return $uri;
     }
@@ -90,21 +88,38 @@ class Uri
      */
     public function getUserInfo(): ?string
     {
-        return $this->user;
+        if ($this->user) {
+            return $this->user . ($this->pass ? ':' . $this->pass : null);
+        }
+
+        return null;
     }
 
     /**
      * @param string|null $user
-     * @param string|null $password
+     * @param string|null $pass
      * @return void
      */
-    public function setUserInfo(?string $user, ?string $password = null): void
+    public function setUserInfo(?string $user, ?string $pass = null): void
     {
         $this->user = $user;
+        $this->pass = null !== $user ? $pass : null;
+    }
 
-        if ((null !== $user) && $password) {
-            $this->user .= ':' . $password;
-        }
+    /**
+     * @return string|null
+     */
+    public function getUser(): ?string
+    {
+        return $this->user;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPass(): ?string
+    {
+        return $this->pass;
     }
 
     /**
@@ -164,6 +179,16 @@ class Uri
     public function getQuery(): ?string
     {
         return $this->query;
+    }
+
+    /**
+     * @return array
+     */
+    public function getQueryArgs(): array
+    {
+        parse_str($this->query, $args);
+
+        return $args;
     }
 
     /**

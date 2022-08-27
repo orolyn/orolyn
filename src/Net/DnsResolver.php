@@ -79,8 +79,8 @@ class DnsResolver
         $packet->writeUnsignedInt16($header->nsCount);
         $packet->writeUnsignedInt16($header->arCount);
 
-        foreach (String($host)->explode('.') as $label) {
-            $packet->writeUnsignedInt8(String($label)->getLength());
+        foreach (explode('.', $host) as $label) {
+            $packet->writeUnsignedInt8(strlen($label));
             $packet->write($label);
         }
 
@@ -108,6 +108,7 @@ class DnsResolver
         $header->aa     = ($flags >> 10) & 0x01;
         $header->opcode = ($flags >> 11) & 0x0F;
         $header->qr     = ($flags >> 15) & 0x01;
+
 
         $header->qdCount = $packet->readUnsignedInt16();
         $header->anCount = $packet->readUnsignedInt16();

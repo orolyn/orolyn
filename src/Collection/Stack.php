@@ -4,7 +4,11 @@ namespace Orolyn\Collection;
 use \Ds\Stack as DsStack;
 use Orolyn\InvalidOperationException;
 
-class Stack implements ICollection
+/**
+ * @template T
+ * @extends IStack<T>
+ */
+class Stack implements IStack
 {
     private DsStack $source;
 
@@ -13,11 +17,17 @@ class Stack implements ICollection
         $this->source = $source instanceof DsStack ? $source : new DsStack($source);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function count(): int
     {
         return $this->source->count();
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getIterator(): \Generator
     {
         foreach ($this->source as $item) {
@@ -33,6 +43,9 @@ class Stack implements ICollection
         return $this->source->isEmpty();
     }
 
+    /**
+     * @inheritdoc
+     */
     public function peek(): mixed
     {
         if ($this->source->isEmpty()) {
@@ -42,13 +55,23 @@ class Stack implements ICollection
         return $this->source->peek();
     }
 
+    /**
+     * @inheritdoc
+     */
     public function push(mixed $item): void
     {
         $this->source->push($item);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function pop(): mixed
     {
+        if ($this->source->isEmpty()) {
+            throw new InvalidOperationException('Stack is empty');
+        }
+
         return $this->source->pop();
     }
 }

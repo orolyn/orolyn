@@ -3,9 +3,7 @@ namespace Orolyn\Net\Http;
 
 use Orolyn\IO\IInputStream;
 use Orolyn\Net\Http\Parser\RequestLine;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
+use Orolyn\Net\Uri;
 
 class HttpRequest extends Message
 {

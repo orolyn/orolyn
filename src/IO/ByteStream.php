@@ -2,17 +2,6 @@
 namespace Orolyn\IO;
 
 use Orolyn\ArgumentOutOfRangeException;
-use Orolyn\Endian;
-use function Orolyn\Bool;
-use function Orolyn\Byte;
-use function Orolyn\Double;
-use function Orolyn\Float;
-use function Orolyn\Int8;
-use function Orolyn\Int16;
-use function Orolyn\Int32;
-use function Orolyn\Int64;
-use function Orolyn\String;
-use Orolyn\StandardObject;
 
 class ByteStream implements IInputStream, IOutputStream
 {
@@ -54,10 +43,6 @@ class ByteStream implements IInputStream, IOutputStream
         return 0;
     }
 
-    public function flush(): void
-    {
-    }
-
     public function peek(int $length = 1): ?string
     {
         $position = $this->getPosition();
@@ -76,7 +61,7 @@ class ByteStream implements IInputStream, IOutputStream
             throw new ArgumentOutOfRangeException('length');
         }
 
-        if ($this->isEndOfStream()) {
+        if ($this->getBytesAvailable() < $length) {
             throw new EndOfStreamException();
         }
 
@@ -88,8 +73,10 @@ class ByteStream implements IInputStream, IOutputStream
 
     public function write(string $bytes): void
     {
-        $this->bytes = String($this->bytes)->insert($this->position, $bytes);
-        $this->position += strlen($bytes);
+        $length = strlen($bytes);
+        $this->bytes =
+            substr($this->bytes, 0, $this->position) . $bytes . substr($this->bytes, $this->position + $length);
+        $this->position += $length;
     }
 
     public function setPosition(int $position): void
