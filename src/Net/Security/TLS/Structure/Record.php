@@ -2,6 +2,7 @@
 
 namespace Orolyn\Net\Security\TLS\Structure;
 
+use Orolyn\Net\Security\TLS\Context;
 use Orolyn\IO\IInputStream;
 use Orolyn\IO\IOutputStream;
 use Orolyn\Net\Security\Structure\Version13\Random13;
@@ -61,10 +62,10 @@ class Record extends Structure
     /**
      * @inheritdoc
      */
-    public static function decode(IInputStream $stream, ?bool $server = null): static
+    public static function decode(IInputStream $stream, ?Context $context = null): static
     {
-        $contentType = ContentType::decode($stream, $server);
-        ProtocolVersion::decode($stream, $server);
+        $contentType = ContentType::decode($stream);
+        ProtocolVersion::decode($stream);
         $data = $stream->read($stream->readUnsignedInt16());
 
         return new Record($contentType, $data);

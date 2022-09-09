@@ -2,10 +2,14 @@
 
 namespace Orolyn\Net\Security\TLS\Structure;
 
+use Orolyn\Net\Security\TLS\Context;
 use Orolyn\IEquatable;
 use Orolyn\IO\IInputStream;
 use Orolyn\IO\IOutputStream;
 use Orolyn\Security\Cryptography\CipherMethod;
+use Orolyn\Security\Cryptography\HashAlgorithm;
+use Orolyn\Security\Cryptography\SHA256;
+use Orolyn\Security\Cryptography\SHA384;
 
 /**
  * uint8 CipherSuite[2];
@@ -31,7 +35,7 @@ enum CipherSuite: int implements IStructure, IEquatable
     /**
      * @inheritdoc
      */
-    public static function decode(IInputStream $stream, ?bool $server = null): static
+    public static function decode(IInputStream $stream, ?Context $context = null): static
     {
         $a = $stream->readUnsignedInt8();
         $b = $stream->readUnsignedInt8();
@@ -54,16 +58,16 @@ enum CipherSuite: int implements IStructure, IEquatable
     }
 
     /**
-     * @return string
+     * @return HashAlgorithm
      */
-    public function getHashAlgorithm(): string
+    public function getHashAlgorithm(): HashAlgorithm
     {
         return match ($this) {
-            self::TLS_AES_256_GCM_SHA384 => 'sha384',
+            self::TLS_AES_256_GCM_SHA384 => new SHA384(),
             self::TLS_AES_128_GCM_SHA256,
             self::TLS_CHACHA20_POLY1305_SHA256,
             self::TLS_AES_128_CCM_SHA256,
-            self::TLS_AES_128_CCM_8_SHA256 => 'sha256',
+            self::TLS_AES_128_CCM_8_SHA256 => new SHA256(),
         };
     }
 

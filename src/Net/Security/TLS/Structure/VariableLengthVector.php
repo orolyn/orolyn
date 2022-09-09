@@ -2,6 +2,7 @@
 
 namespace Orolyn\Net\Security\TLS\Structure;
 
+use Orolyn\Net\Security\TLS\Context;
 use Countable;
 use IteratorAggregate;
 use Orolyn\Collection\ArrayList;
@@ -90,7 +91,7 @@ abstract class VariableLengthVector extends Structure implements IteratorAggrega
     /**
      * @inheritdoc
      */
-    public static function decode(IInputStream $stream, ?bool $server = null): static
+    public static function decode(IInputStream $stream, ?Context $context = null): static
     {
         $length = match (static::$variableLength) {
             VariableLength::UInt8  => $stream->readUnsignedInt8(),
@@ -104,7 +105,7 @@ abstract class VariableLengthVector extends Structure implements IteratorAggrega
         $structures = [];
 
         while ($byteStream->getBytesAvailable()) {
-            $structures[] = static::$structureClass::decode($byteStream, $server);
+            $structures[] = static::$structureClass::decode($byteStream, $context);
         }
 
         return new static($structures);

@@ -29,7 +29,7 @@ class RecordLayer
     public function __construct(
         private IInputStream $input,
         private IOutputStream $output,
-        private bool $server
+        private Context $context
     ) {
     }
 
@@ -80,7 +80,7 @@ class RecordLayer
     public function receive(ContentType $contentType, ?HandshakeType $handshakeType = null): ?IStructure
     {
         if (null === $data = $this->currentData) {
-            $record = Record::decode($this->input, $this->server);
+            $record = Record::decode($this->input, $this->context);
 
             if (null !== $this->encryption) {
                 if (ContentType::ApplicationData === $record->contentType) {
@@ -103,7 +103,7 @@ class RecordLayer
             };
         }
 
-        if (ContentType::Alert === $this->currentContentType) {
+        if (ContentType::Alert === $this->currentContentType && ContentType::Alert !== $contentType) {
             throw $data->createException();
         }
 
@@ -127,7 +127,7 @@ class RecordLayer
 
     private function doReceiveAlert(ByteQueueStream $stream): Alert
     {
-        $data = Alert::decode($stream, $this->server);
+        $data = Alert::decode($stream);
 
         if ($stream->getBytesAvailable() > 0) {
             throw new RuntimeException('Expected end of record');
@@ -138,7 +138,7 @@ class RecordLayer
 
     private function doReceiveChangeCipherSpec(ByteQueueStream $stream): ChangeCipherSpec
     {
-        $data = ChangeCipherSpec::decode($stream, $this->server);
+        $data = ChangeCipherSpec::decode($stream);
 
         if ($stream->getBytesAvailable() > 0) {
             throw new RuntimeException('Expected end of record');
@@ -149,12 +149,12 @@ class RecordLayer
 
     private function doReceiveHandshake(ByteQueueStream $stream): Handshake
     {
-        $coroutine = new Coroutine(fn () => Handshake::decode($stream, $this->server));
+        $coroutine = new Coroutine(fn () => Handshake::decode($stream, $this->context));
         $coroutine->start();
 
         while (!$coroutine->isCompleted()) {
 
-            $record = Record::decode($this->input, $this->server);
+            $record = Record::decode($this->input);
 
             if (ContentType::Handshake !== $record->contentType) {
                 throw new RuntimeException('Expected handshake record');

@@ -2,6 +2,7 @@
 
 namespace Orolyn\Net\Security\TLS\Structure;
 
+use Orolyn\Net\Security\TLS\Context;
 enum HkdfLabelType: string
 {
     case EXT_BINDER     = 'tls13 ext binder';

@@ -2,6 +2,7 @@
 
 namespace Orolyn\Net\Security\TLS\Structure;
 
+use Orolyn\Net\Security\TLS\Context;
 use Orolyn\IO\IInputStream;
 use Orolyn\IO\IOutputStream;
 
@@ -35,10 +36,10 @@ class CertificateVerify extends Structure
     /**
      * @inheritdoc
      */
-    public static function decode(IInputStream $stream, ?bool $server = null): static
+    public static function decode(IInputStream $stream, ?Context $context = null): static
     {
         return new CertificateVerify(
-            SignatureScheme::decode($stream, $server),
+            SignatureScheme::decode($stream, $context),
             $stream->read($stream->readUnsignedInt16())
         );
     }

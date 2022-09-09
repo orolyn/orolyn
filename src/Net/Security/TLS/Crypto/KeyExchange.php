@@ -6,8 +6,10 @@ use Orolyn\Net\Security\TLS\Crypto\Key\PublicKey;
 use Orolyn\Net\Security\TLS\Crypto\Key\SecretKey;
 use Orolyn\Net\Security\TLS\Structure\CipherSuite;
 use Orolyn\Net\Security\TLS\Structure\Handshake;
+use Orolyn\Net\Security\TLS\Structure\HkdfLabel;
 use Orolyn\Net\Security\TLS\Structure\HkdfLabelType;
 use Orolyn\Net\Security\TLS\Structure\KeyShareEntry;
+use Orolyn\Security\Cryptography\HKDF;
 
 class KeyExchange
 {
@@ -26,22 +28,44 @@ class KeyExchange
         SecretKey $secretKey,
         PublicKey $publicKey
     ): KeyExchange {
-        $helloHash = hash($cipherSuite->getHashAlgorithm(), $clientHello . $serverHello, true);
-        $hkdf = new HKDF($cipherSuite->getHashAlgorithm());
+        $hashAlgorithm = $cipherSuite->getHashAlgorithm();
 
-        $earlySecret = $hkdf->extract("\x00", str_pad('', 48, "\x00"));
-        $emptyHash = hash($cipherSuite->getHashAlgorithm(), '', true);
-        $derivedSecret = $hkdf->expandLabel($earlySecret, HkdfLabelType::DERIVED, $emptyHash, 48);
-        $handshakeSecret = $hkdf->extract($derivedSecret, $secretKey->createSharedSecret($publicKey));
+        $helloHash = $hashAlgorithm->computeHash($clientHello . $serverHello);
+        $hkdf = new HKDF($cipherSuite->getHashAlgorithm()->algorithmMethod);
 
-        $clientSecret = $hkdf->expandLabel($handshakeSecret, HkdfLabelType::C_HS_TRAFFIC, $helloHash, 48);
-        $serverSecret = $hkdf->expandLabel($handshakeSecret, HkdfLabelType::S_HS_TRAFFIC, $helloHash, 48);
+        $earlySecret = $hkdf->extract(str_pad('', 48, "\x00"), "\x00");
+        $emptyHash = $hashAlgorithm->computeHash('');
+        $derivedSecret = self::expandLabel($hkdf, $earlySecret, HkdfLabelType::DERIVED, $emptyHash, 48);
+        $handshakeSecret = $hkdf->extract($secretKey->createSharedSecret($publicKey), $derivedSecret);
+
+        $clientSecret = self::expandLabel($hkdf, $handshakeSecret, HkdfLabelType::C_HS_TRAFFIC, $helloHash, 48);
+        $serverSecret = self::expandLabel($hkdf, $handshakeSecret, HkdfLabelType::S_HS_TRAFFIC, $helloHash, 48);
 
         return new KeyExchange(
-            $hkdf->expandLabel($clientSecret, HkdfLabelType::KEY, '', 32),
-            $hkdf->expandLabel($clientSecret, HkdfLabelType::IV,  '', 12),
-            $hkdf->expandLabel($serverSecret, HkdfLabelType::KEY, '', 32),
-            $hkdf->expandLabel($serverSecret, HkdfLabelType::IV,  '', 12)
+            self::expandLabel($hkdf, $clientSecret, HkdfLabelType::KEY, '', 32),
+            self::expandLabel($hkdf, $clientSecret, HkdfLabelType::IV,  '', 12),
+            self::expandLabel($hkdf, $serverSecret, HkdfLabelType::KEY, '', 32),
+            self::expandLabel($hkdf, $serverSecret, HkdfLabelType::IV,  '', 12)
+        );
+    }
+
+    private static function expandLabel(
+        HKDF $hkdf,
+        string $key,
+        HkdfLabelType $type,
+        string $context,
+        int $length
+    ): string {
+        //return $hkdf->expandLabel($key, $type, $context, $length);
+
+        return $hkdf->expand(
+            $key,
+            $length,
+            new HkdfLabel(
+                $length,
+                $type,
+                $context
+            )
         );
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Orolyn\Net\Security\TLS\Structure;
 
+use Orolyn\Net\Security\TLS\Context;
 use Orolyn\IO\ByteStream;
 use Orolyn\IO\IInputStream;
 use Orolyn\IO\IOutputStream;

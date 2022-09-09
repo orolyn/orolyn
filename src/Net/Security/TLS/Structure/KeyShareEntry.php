@@ -2,6 +2,7 @@
 
 namespace Orolyn\Net\Security\TLS\Structure;
 
+use Orolyn\Net\Security\TLS\Context;
 use Orolyn\ArgumentException;
 use Orolyn\ArgumentOutOfRangeException;
 use Orolyn\IO\IInputStream;
@@ -40,10 +41,10 @@ class KeyShareEntry extends Structure
     /**
      * @inheritdoc
      */
-    public static function decode(IInputStream $stream, ?bool $server = null): static
+    public static function decode(IInputStream $stream, ?Context $context = null): static
     {
         return new KeyShareEntry(
-            NamedGroup::decode($stream, $server),
+            NamedGroup::decode($stream, $context),
             $stream->read($stream->readUnsignedInt16())
         );
     }

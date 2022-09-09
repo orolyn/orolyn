@@ -2,6 +2,7 @@
 
 namespace Orolyn\Net\Security\TLS\Structure;
 
+use Orolyn\Net\Security\TLS\Context;
 use Orolyn\IO\ByteStream;
 use Orolyn\IO\IInputStream;
 use Orolyn\IO\IOutputStream;
@@ -33,11 +34,11 @@ class Alert extends Structure
     /**
      * @inheritdoc
      */
-    public static function decode(IInputStream $stream, ?bool $server = null): static
+    public static function decode(IInputStream $stream, ?Context $context = null): static
     {
         return new Alert(
-            AlertLevel::decode($stream, $server),
-            AlertDescription::decode($stream, $server)
+            AlertLevel::decode($stream, $context),
+            AlertDescription::decode($stream, $context)
         );
     }
 

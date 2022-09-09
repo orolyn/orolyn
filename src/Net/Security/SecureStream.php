@@ -7,6 +7,7 @@ use Orolyn\Endian;
 use Orolyn\IO\IStream;
 use Orolyn\IO\ProxyInputStream;
 use Orolyn\IO\ProxyOutputStream;
+use Orolyn\Net\Security\TLS\Context;
 use Orolyn\Net\Security\TLS\Crypto\Encryption;
 use Orolyn\Net\Security\TLS\Crypto\EncryptionMode;
 use Orolyn\Net\Security\TLS\Crypto\Key\PublicKey;
@@ -27,7 +28,7 @@ use Orolyn\Net\Security\TLS\Structure\KeyShareEntryVector;
 use Orolyn\Net\Security\TLS\Structure\NamedGroup;
 use Orolyn\Net\Security\TLS\Structure\NamedGroupVector;
 use Orolyn\Net\Security\TLS\Structure\ProtocolVersion;
-use Orolyn\Net\Security\TLS\Structure\ProtocolVersionVector;
+use Orolyn\Net\Security\TLS\Structure\ProtocolVersionList;
 use Orolyn\Net\Security\TLS\Structure\Random;
 use Orolyn\Net\Security\TLS\Structure\ServerName;
 use Orolyn\Net\Security\TLS\Structure\ServerNameVector;
@@ -36,13 +37,12 @@ use Orolyn\Net\Security\TLS\Structure\SignatureScheme;
 use Orolyn\Net\Security\TLS\Structure\SignatureSchemeVector;
 use Orolyn\SecureRandom;
 use Orolyn\Security\Cryptography\SymmetricAlgorithm;
+use SodiumException;
 
 class SecureStream
 {
     private RecordLayer $recordLayer;
-    private ?Random $random = null;
-    private ?CipherSuiteList $supportedCipherSuites = null;
-    private ?CipherSuite $currentCipherSuite = null;
+    private Context $context;
 
     /**
      * @param IStream $stream
@@ -50,17 +50,36 @@ class SecureStream
     public function __construct(
         private IStream $stream
     ) {
+        $this->context = new Context();
+
+        // Use proxies to override the inner stream endian.
+        $input = new ProxyInputStream($this->stream);
+        $input->setEndian(Endian::BigEndian);
+
+        $output = new ProxyOutputStream($this->stream);
+        $output->setEndian(Endian::BigEndian);
+
+        $this->recordLayer = new RecordLayer($input, $output, $this->context);
+    }
+
+    public function authenticateAsServer(): void
+    {
+
     }
 
     public function authenticateAsClient(): void
     {
-        $this->createRecordLayer(false);
         $secretKey = SecretKey::generate();
 
-        $this->random = new Random(SecureRandom::generateBytes(32));
-        $this->supportedCipherSuites = CipherSuiteList::getModernCipherSuiteList();
+        $this->context->clientRandom = new Random(SecureRandom::generateBytes(32));
+        $this->context->supportedCipherSuites = CipherSuiteList::getModernCipherSuiteList();
+        $this->context->isServer = false;
 
-        $clientHelloHandshake = $this->createClientHandshake($this->random, $this->supportedCipherSuites, $secretKey);
+        $clientHelloHandshake = $this->createClientHandshake(
+            $this->context->clientRandom,
+            $this->context->supportedCipherSuites,
+            $secretKey
+        );
 
         $this->recordLayer->send(
             ContentType::Handshake,
@@ -77,25 +96,26 @@ class SecureStream
 
         $serverHello = $serverHelloHandshake->serverHello;
 
-        if (!$this->supportedCipherSuites->contains($serverHello->cipherSuite)) {
+        if (!$this->context->supportedCipherSuites->contains($serverHello->cipherSuite)) {
             throw new Exception();
         }
 
-        $this->currentCipherSuite = $serverHello->cipherSuite;
+        $this->context->serverRandom = $serverHello->random;
+        $this->context->cipherSuite = $serverHello->cipherSuite;
 
-        if (null === $extension = $serverHello->extensions->getExtension(ExtensionType::KeyShare)) {
+        if (null === $keyShareExtension = $serverHello->extensions->getExtension(ExtensionType::KeyShare)) {
             throw new Exception();
         }
 
         $this->recordLayer->encryption = new Encryption(
             EncryptionMode::Client,
-            $this->currentCipherSuite,
+            $this->context->cipherSuite,
             KeyExchange::create(
-                $this->currentCipherSuite,
+                $this->context->cipherSuite,
                 $clientHelloHandshake,
                 $serverHelloHandshake,
                 $secretKey,
-                new PublicKey($extension->extensionData->keyExchange)
+                new PublicKey($keyShareExtension->keyShareEntry->keyExchange)
             )
         );
 
@@ -117,22 +137,18 @@ class SecureStream
             var_dump($serverCertificateVerify);
         }
 
+        $handshake = $this->recordLayer->require(ContentType::Handshake, HandshakeType::Finished);
+
         //$plain = sodium_crypto_aead_aes256gcm_decrypt($cipherRecord->bytes, $cipherRecord->getHeader(), $exchange->serverIv, $exchange->serverKey);
         //var_dump(bin2hex($plain));
     }
 
-    private function createRecordLayer(bool $server): void
-    {
-        // Use proxies to override the inner stream endian.
-        $input = new ProxyInputStream($this->stream);
-        $input->setEndian(Endian::BigEndian);
-
-        $output = new ProxyOutputStream($this->stream);
-        $output->setEndian(Endian::BigEndian);
-
-        $this->recordLayer = new RecordLayer($input, $output, $server);
-    }
-
+    /**
+     * @param Random $random
+     * @param CipherSuiteList $supportedCipherSuites
+     * @param SecretKey $secretKey
+     * @return Handshake
+     */
     private function createClientHandshake(
         Random $random,
         CipherSuiteList $supportedCipherSuites,
@@ -149,7 +165,7 @@ class SecureStream
                     [
                         new Extension(
                             ExtensionType::SupportedVersions,
-                            new ProtocolVersionVector(
+                            new ProtocolVersionList(
                                 [
                                     ProtocolVersion::Version13
                                 ]

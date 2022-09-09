@@ -4,18 +4,32 @@ namespace Orolyn\Net\Security\TLS\Structure;
 
 use Orolyn\Net\Security\TLS\Context;
 use Orolyn\ArgumentException;
-use Orolyn\ArgumentOutOfRangeException;
+use Orolyn\ByteConverter;
+use Orolyn\IEquatable;
 use Orolyn\IO\IInputStream;
 use Orolyn\IO\IOutputStream;
 
-class ChangeCipherSpec extends Structure
+/**
+ * struct {
+ *     opaque verify_data[Hash.length];
+ * } Finished;
+ */
+class Finished extends Structure
 {
+    public readonly int $length;
+
+    public function __construct(
+        public readonly string $verifyData
+    ) {
+        $this->length = strlen($this->verifyData);
+    }
+
     /**
      * @inheritdoc
      */
     public function encode(IOutputStream $stream): void
     {
-        $stream->writeUnsignedInt8(1);
+        $stream->write($this->verifyData);
     }
 
     /**
@@ -23,8 +37,6 @@ class ChangeCipherSpec extends Structure
      */
     public static function decode(IInputStream $stream, ?Context $context = null): static
     {
-        $stream->readUnsignedInt8();
-
-        return new ChangeCipherSpec();
+        return new Finished($stream->read());
     }
 }

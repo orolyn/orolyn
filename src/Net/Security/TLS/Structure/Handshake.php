@@ -2,6 +2,7 @@
 
 namespace Orolyn\Net\Security\TLS\Structure;
 
+use Orolyn\Net\Security\TLS\Context;
 use Exception;
 use Orolyn\ArgumentException;
 use Orolyn\Collection\Dictionary;
@@ -100,14 +101,14 @@ class Handshake extends Structure
     /**
      * @inheritdoc
      */
-    public static function decode(IInputStream $stream, ?bool $server = null): static
+    public static function decode(IInputStream $stream, ?Context $context = null): static
     {
         $handshakeType = HandshakeType::from($stream->readUnsignedInt8());
         $byteStream = self::createByteStream($stream->read($stream->readUnsignedInt24()));
 
         /** @var class-string<IStructure> $class */
         $class = self::getStructureClass($handshakeType);
-        $data = $class::decode($byteStream, $server, $server);
+        $data = $class::decode($byteStream, $context);
 
         return new Handshake(
             $handshakeType,

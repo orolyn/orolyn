@@ -2,6 +2,7 @@
 
 namespace Orolyn\Net\Security\TLS\Structure;
 
+use Orolyn\Net\Security\TLS\Context;
 use Orolyn\IO\IInputStream;
 use Orolyn\IO\IOutputStream;
 
@@ -26,7 +27,7 @@ enum ProtocolVersion: int implements IStructure
     /**
      * @inheritdoc
      */
-    public static function decode(IInputStream $stream, ?bool $server = null): static
+    public static function decode(IInputStream $stream, ?Context $context = null): static
     {
         return ProtocolVersion::from($stream->readUnsignedInt16());
     }

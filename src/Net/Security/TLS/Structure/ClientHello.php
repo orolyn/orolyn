@@ -2,6 +2,7 @@
 
 namespace Orolyn\Net\Security\TLS\Structure;
 
+use Orolyn\Net\Security\TLS\Context;
 use Orolyn\IO\IInputStream;
 use Orolyn\IO\IOutputStream;
 use Orolyn\SecureRandom;
@@ -48,14 +49,14 @@ class ClientHello extends Structure
     /**
      * @inheritdoc
      */
-    public static function decode(IInputStream $stream, ?bool $server = null): static
+    public static function decode(IInputStream $stream, ?Context $context = null): static
     {
-        $protocolVersion = ProtocolVersion::decode($stream, $server); // legacy version
-        $random = Random::decode($stream, $server);
-        $sessionId = SessionId::decode($stream, $server);
+        $protocolVersion = ProtocolVersion::decode($stream, $context); // legacy version
+        $random = Random::decode($stream, $context);
+        $sessionId = SessionId::decode($stream, $context);
         $stream->read(2);
-        $cipherSuites = CipherSuiteList::decode($stream, $server);
-        $extensions = ExtensionList::decode($stream, $server);
+        $cipherSuites = CipherSuiteList::decode($stream, $context);
+        $extensions = ExtensionList::decode($stream, $context);
 
         return new ClientHello(
             $protocolVersion,

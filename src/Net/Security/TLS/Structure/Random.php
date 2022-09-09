@@ -2,6 +2,7 @@
 
 namespace Orolyn\Net\Security\TLS\Structure;
 
+use Orolyn\Net\Security\TLS\Context;
 use Orolyn\ArgumentException;
 use Orolyn\ByteConverter;
 use Orolyn\IEquatable;
@@ -32,7 +33,7 @@ class Random extends Structure implements IEquatable
     /**
      * @inheritdoc
      */
-    public static function decode(IInputStream $stream, ?bool $server = null): static
+    public static function decode(IInputStream $stream, ?Context $context = null): static
     {
         return new Random($stream->read(32));
     }

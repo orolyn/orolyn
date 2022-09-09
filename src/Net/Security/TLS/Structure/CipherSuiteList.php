@@ -2,6 +2,7 @@
 
 namespace Orolyn\Net\Security\TLS\Structure;
 
+use Orolyn\Net\Security\TLS\Context;
 /**
  * CipherSuite cipher_suites<2..2^16-2>;
  *
