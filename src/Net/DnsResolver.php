@@ -1,7 +1,7 @@
 <?php
 namespace Orolyn\Net;
 
-use Orolyn\ByteConverter;
+use Orolyn\BitConverter;
 use Orolyn\Collection\ArrayList;
 use Orolyn\Endian;
 use Orolyn\Environment;
@@ -56,7 +56,7 @@ class DnsResolver
         $packet->setEndian(Endian::BigEndian);
 
         $header = self::createPacketHeader();
-        $header->id = $id = ByteConverter::getUnsignedInt16(SecureRandom::generateBytes(2));
+        $header->id = $id = BitConverter::getUnsignedInt16(SecureRandom::generateBytes(2));
         $header->qdCount = 1;
         $header->rd = 1;
         $header->opcode = self::OPCODE_QUERY;

@@ -42,7 +42,7 @@ interface IOutputStream
 
     public function writeUnsignedInt64(int$value): void;
 
-    public function writeFloat(float $value): void;
+    public function writeSingle(float $value): void;
 
     public function writeDouble(float$value): void;
 

@@ -159,7 +159,7 @@ interface IInputStream
      *
      * @return float
      */
-    public function readFloat(): float;
+    public function readSingle(): float;
 
     /**
      * Read a single 64 bit floating point value.

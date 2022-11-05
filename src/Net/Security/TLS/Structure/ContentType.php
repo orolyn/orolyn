@@ -2,7 +2,7 @@
 
 namespace Orolyn\Net\Security\TLS\Structure;
 
-use Orolyn\ByteConverter;
+use Orolyn\BitConverter;
 use Orolyn\Net\Security\TLS\Context;
 use Orolyn\IO\IInputStream;
 use Orolyn\IO\IOutputStream;
@@ -33,7 +33,7 @@ enum ContentType: int implements IStructure
      */
     public function toByte(): string
     {
-        return ByteConverter::getBinaryUnsignedInt8($this->value);
+        return BitConverter::getBinaryUnsignedInt8($this->value);
     }
 
     /**

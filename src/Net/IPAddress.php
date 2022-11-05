@@ -2,7 +2,7 @@
 namespace Orolyn\Net;
 
 use Orolyn\ArgumentException;
-use Orolyn\ByteConverter;
+use Orolyn\BitConverter;
 use Orolyn\Endian;
 use Orolyn\FormatException;
 use Orolyn\IEquatable;
@@ -17,7 +17,7 @@ final class IPAddress implements IEquatable
     public function __construct(int|string $address)
     {
         if (is_int($address)) {
-            $address = ByteConverter::getBinaryInt32($address, Endian::BigEndian);
+            $address = BitConverter::getBinaryInt32($address, Endian::BigEndian);
         }
 
         if (false === inet_ntop($address)) {
@@ -56,11 +56,11 @@ final class IPAddress implements IEquatable
     public function getHashCode(): int
     {
         if (4 === strlen($this->address)) {
-            return ByteConverter::getInt64($this->address);
+            return BitConverter::getInt64($this->address);
         }
 
-        $a = ByteConverter::getInt64(substr($this->address, 0, 8));
-        $b = ByteConverter::getInt64(substr($this->address, 8, 16));
+        $a = BitConverter::getInt64(substr($this->address, 0, 8));
+        $b = BitConverter::getInt64(substr($this->address, 8, 16));
 
         return $a ^ $b;
     }

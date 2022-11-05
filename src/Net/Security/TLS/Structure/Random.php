@@ -4,7 +4,7 @@ namespace Orolyn\Net\Security\TLS\Structure;
 
 use Orolyn\Net\Security\TLS\Context;
 use Orolyn\ArgumentException;
-use Orolyn\ByteConverter;
+use Orolyn\BitConverter;
 use Orolyn\IEquatable;
 use Orolyn\IO\IInputStream;
 use Orolyn\IO\IOutputStream;
@@ -56,7 +56,7 @@ class Random extends Structure implements IEquatable
     public function getHashCode(): int
     {
         return
-            ByteConverter::getInt32(
+            BitConverter::getInt32(
                 substr($this->randomBytes, 0, 4) ^
                 substr($this->randomBytes, 4, 4) ^
                 substr($this->randomBytes, 8, 4) ^

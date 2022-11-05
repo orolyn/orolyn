@@ -2,7 +2,7 @@
 
 namespace Orolyn\Net\Security\TLS\Crypto;
 
-use Orolyn\ByteConverter;
+use Orolyn\BitConverter;
 use Orolyn\Endian;
 use Orolyn\IO\Binary;
 use Orolyn\IO\ByteStream;
@@ -63,7 +63,7 @@ class Encryption
             '%s%s%s',
             ContentType::ApplicationData->toByte(),
             ProtocolVersion::Version12->toBytes(),
-            ByteConverter::getBinaryUnsignedInt16(
+            BitConverter::getBinaryUnsignedInt16(
                 Binary::getLength($plainText) + $this->encryptor->tagLength,
                 Endian::BigEndian
             )

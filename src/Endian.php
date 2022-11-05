@@ -1,10 +1,13 @@
 <?php
 namespace Orolyn;
 
+use ReflectionEnum;
+
 enum Endian
 {
     case BigEndian;
     case LittleEndian;
+    case Default;
 
     public static function getDefault(): Endian
     {

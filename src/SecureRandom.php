@@ -26,7 +26,7 @@ final class SecureRandom
     public static function generateInt(int $a = TypeInt64::MIN_VALUE, int $b = TypeInt64::MAX_VALUE): int
     {
         return round((($b - $a) *
-                Math::abs(ByteConverter::getInt64(self::generateBytes(8))) / TypeInt64::MAX_VALUE) + $a);
+                Math::abs(BitConverter::getInt64(self::generateBytes(8))) / TypeInt64::MAX_VALUE) + $a);
     }
 
     /**
