@@ -10,6 +10,11 @@ trait OutputStreamTrait
 
     abstract public function write(string $bytes): void;
 
+    public function writeNullTerminated(string $bytes): void
+    {
+        $this->write($bytes . "\x00");
+    }
+
     public function writeInt8(int $value): void
     {
         $this->write(ByteConverter::getBinaryInt8($value));
@@ -75,7 +80,26 @@ trait OutputStreamTrait
         $this->write(ByteConverter::getBinaryBool($value));
     }
 
+    public function writeNull(int $length = 1): void
+    {
+        $this->write(str_pad('', $length, "\x00"));
+    }
+
     public function flush(): void
     {
+    }
+
+    public function setPosition(int $position): void
+    {
+    }
+
+    public function getPosition(): int
+    {
+        return 0;
+    }
+
+    public function getBytesPending(): int
+    {
+        return 0;
     }
 }

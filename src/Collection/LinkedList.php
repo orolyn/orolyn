@@ -7,6 +7,10 @@ use Orolyn\StandardObject;
 use SplDoublyLinkedList;
 use function Orolyn\TypeOf;
 
+/**
+ * @template T
+ * @extends IList<T>
+ */
 class LinkedList implements IList
 {
     private SplDoublyLinkedList $items;
@@ -23,11 +27,9 @@ class LinkedList implements IList
     /**
      * @inheritdoc
      */
-    public function getIterator(): \Generator
+    public function getIterator(): \Traversable
     {
-        foreach ($this->items as $item) {
-            yield $item;
-        }
+        return $this->items;
     }
 
     /**

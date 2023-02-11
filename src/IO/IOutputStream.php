@@ -32,6 +32,8 @@ interface IOutputStream
 
     public function writeInt32(int$value): void;
 
+    public function writeInt64(int $value): void;
+
     public function writeUnsignedInt8(int$value): void;
 
     public function writeUnsignedInt16(int$value): void;
@@ -47,6 +49,8 @@ interface IOutputStream
     public function writeDouble(float$value): void;
 
     public function writeBool(bool $value): void;
+
+    public function writeNull(int $length = 1): void;
 
     public function flush(): void;
 }

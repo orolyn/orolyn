@@ -5,3 +5,5 @@
 /test.php
 /test.html
 /bin
+
+/.phpunit.result.cache

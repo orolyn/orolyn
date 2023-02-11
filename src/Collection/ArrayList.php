@@ -196,4 +196,9 @@ class ArrayList implements IList
             $func($item, $i);
         }
     }
+
+    public function sort(): void
+    {
+        $this->source->sort();
+    }
 }

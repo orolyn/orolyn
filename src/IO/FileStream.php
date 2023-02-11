@@ -81,7 +81,6 @@ class FileStream implements IInputStream, IOutputStream
         }
 
         if (-1 === $descriptor) {
-            var_dump($req);
             $error = eio_get_last_error($req);
 
             throw new IOException($error);

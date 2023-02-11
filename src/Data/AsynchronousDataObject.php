@@ -55,7 +55,7 @@ class AsynchronousDataObject implements IDataObject
 
     public function exec(string $statement): int|false
     {
-        // TODO: Implement exec() method.
+        $this->driver->exec($statement);
     }
 
     public function query($statement, $mode = PDO::ATTR_DEFAULT_FETCH_MODE, ...$fetch_mode_args): void

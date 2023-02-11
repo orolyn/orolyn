@@ -15,49 +15,21 @@ use Orolyn\Concurrency\TaskScheduler;
  */
 function Async(callable $callback): Task
 {
-    $task = new Task($callback);
-    $task->start();
-
-    return $task;
+    return TaskScheduler::getInstance()->createTask($callback);
 }
 
 /**
- * Wait for one or more tasks to complete.
+ * Wait for task to complete.
  *
- * @param callable|iterable|Task ...$tasks
- * @return void
+ * @param callable|Task ...$tasks
  */
-function Await(callable|iterable|Task ...$tasks): void
+function Await(callable|Task $task): mixed
 {
-    $collection = [];
-
-    foreach ($tasks as $task) {
-        if ($task instanceof Task) {
-            $collection[] = $task;
-        } elseif (is_callable($task)) {
-            $collection[] = new Task($task);
-        } else {
-            foreach ($task as $thisTask) {
-                if (is_callable($thisTask)) {
-                    $thisTask = new Task($thisTask);
-                } elseif (!$thisTask instanceof Task) {
-                    throw new ArgumentException('Iterable collection must only contain tasks or callables.');
-                }
-
-                $collection[] = $thisTask;
-            }
-        }
+    if (!$task instanceof Task) {
+        $task = TaskScheduler::getInstance()->createTask($task);
     }
 
-    if (1 === count($collection)) {
-        $collection[0]->wait();
-
-        return;
-    }
-
-    if (count($collection) > 1) {
-        TaskScheduler::awaitTasks(new ArrayList($collection));
-    }
+    return TaskScheduler::getInstance()->awaitTask($task);
 }
 
 /**
@@ -69,7 +41,7 @@ function Await(callable|iterable|Task ...$tasks): void
  */
 function Suspend(float $delay = 0): void
 {
-    TaskScheduler::suspend($delay);
+    TaskScheduler::getInstance()->suspend($delay);
 }
 
 /**
@@ -125,4 +97,26 @@ function VarDumpBinary(string $string): void
     for ($i = 0; $i < strlen($string); $i++) {
         var_dump(str_pad(decbin(hexdec(bin2hex($string[$i]))), 8, '0', STR_PAD_LEFT));
     }
+}
+
+function StaticConstruct(?string $class = null): void
+{
+    static $initialized = [];
+
+    if (null === $class) {
+
+    }
+
+    if (isset($initialized[$class])) {
+        return;
+    }
+
+    $initialized[$class] = true;
+    $reflection = Reflection::getReflectionClass($class);
+
+    if (!$reflection->hasMethod('__static_construct')) {
+        return;
+    }
+
+    $reflection->getMethod('__static_construct')->invoke(null);
 }

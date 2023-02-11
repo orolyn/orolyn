@@ -82,7 +82,7 @@ interface IInputStream
      *
      * @return string
      */
-    public function readNullTerminatedString(): string;
+    public function readNullTerminated(): string;
 
     /**
      * Read a single 8-bit integer.

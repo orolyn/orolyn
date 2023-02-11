@@ -7,4 +7,5 @@ namespace Orolyn\Data;
  */
 interface IDataObjectDriver
 {
+    public function exec(string $statement): int|false;
 }

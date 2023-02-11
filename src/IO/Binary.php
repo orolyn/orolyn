@@ -23,4 +23,9 @@ class Binary
     {
         return mb_substr($bytes, $start, $length, '8bit');
     }
+
+    public static function truncate(string $bytes, int $length): string
+    {
+        return self::getSubstring($bytes, 0, $length);
+    }
 }

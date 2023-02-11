@@ -73,14 +73,16 @@ class HashSet implements ICollection
         return $this->source->contains(new Item($item));
     }
 
-    /**
-     * @return HashSet
-     */
     public function copy(): HashSet
     {
         $hashSet = new static();
         $hashSet->source = $this->source->copy();
 
         return $hashSet;
+    }
+
+    public function toArray(): array
+    {
+        return $this->source->toArray();
     }
 }

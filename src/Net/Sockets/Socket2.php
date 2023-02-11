@@ -2,6 +2,7 @@
 namespace Orolyn\Net\Sockets;
 
 use Orolyn\ArgumentOutOfRangeException;
+use Orolyn\Console\StandardOutput;
 use Orolyn\IO\Buffer;
 use Orolyn\IO\EndianTrait;
 use Orolyn\IO\InputStreamTrait;
@@ -268,7 +269,7 @@ class Socket2 implements IStream
                 if ($select) {
                     break;
                 } else {
-                    Suspend();
+                    break 2;
                 }
             }
 

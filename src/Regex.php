@@ -19,12 +19,16 @@ class Regex
         return new Regex($pattern);
     }
 
-    public function match(string $subject, &$matches = null, &...$groups): int
+    public function match(string $subject, &$match = null, &...$groups): int
     {
         $num = preg_match($this->pattern, $subject, $matches);
 
-        for ($i = 1; isset($matches[$i]); $i++) {
-            $groups[$i-1] = $matches[$i];
+        if ($num > 0) {
+            $match = $matches[0];
+
+            for ($i = 1; isset($matches[$i]); $i++) {
+                $groups[$i-1] = $matches[$i];
+            }
         }
 
         return $num;

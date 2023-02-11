@@ -2,11 +2,27 @@
 
 namespace Orolyn\Data\Mysql;
 
+use Orolyn\Console\HexViewer;
+use Orolyn\Data\DriverException;
 use Orolyn\Data\IDataObjectDriver;
+use Orolyn\Data\Mysql\Protocol\Authentication\Authentication;
+use Orolyn\Data\Mysql\Protocol\Authentication\AuthSwitchRequest;
+use Orolyn\Data\Mysql\Protocol\Authentication\AuthSwitchResponse;
+use Orolyn\Data\Mysql\Protocol\Capability;
+use Orolyn\Data\Mysql\Protocol\Command\Command;
+use Orolyn\Data\Mysql\Protocol\Command\Text\Query;
+use Orolyn\Data\Mysql\Protocol\Command\Text\Quit;
+use Orolyn\Data\Mysql\Protocol\Handshake\Handshake;
+use Orolyn\Data\Mysql\Protocol\Handshake\HandshakeResponse;
+use Orolyn\Data\Mysql\Protocol\MysqlCapabilityList;
+use Orolyn\Data\Mysql\Protocol\Packet;
+use Orolyn\Data\Mysql\Protocol\Response\OK;
+use Orolyn\Data\Mysql\Protocol\Response\ResultSet;
+use Orolyn\Data\Mysql\Protocol\Response\ServerResponse;
 use Orolyn\Endian;
-use Orolyn\Math;
+use Orolyn\IO\ByteStream;
 use Orolyn\Net\EndPoint;
-use Orolyn\Net\Sockets\Socket;
+use Orolyn\Net\Sockets\Socket2;
 use Orolyn\Net\Uri;
 
 /**
@@ -14,17 +30,40 @@ use Orolyn\Net\Uri;
  */
 class Mysql implements IDataObjectDriver
 {
-    private const CAPABILITY_CLIENT_PLUGIN_AUTH = 0x00080000;
-
-    private Socket $socket;
+    private MysqlHandle $handle;
+    private MysqlOptions $options;
+    private int $capabilities;
+    private ?Authentication $authentication = null;
+    private ServerResponse $serverResponse;
 
     public function __construct(Uri $uri, array $options = [])
     {
+        $this->options = new MysqlOptions($options);
+        $this->capabilities =
+            Capability::CLIENT_MYSQL |
+            Capability::CLIENT_PROTOCOL_41 |
+            Capability::CLIENT_PLUGIN_AUTH |
+            Capability::CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA |
+            Capability::CLIENT_SECURE_CONNECTION |
+            Capability::CLIENT_DEPRECATE_EOF;
+
+        /*
+        $this->capabilityList->add(MysqlCapability::CLIENT_MULTI_STATEMENTS);
+        $this->capabilityList->add(MysqlCapability::CLIENT_MULTI_RESULTS);
+        $this->capabilityList->add(MysqlCapability::CLIENT_PS_MULTI_RESULTS);
+        $this->capabilityList->add(MysqlCapability::CLIENT_PLUGIN_AUTH);
+        $this->capabilityList->add(MysqlCapability::CLIENT_CONNECT_ATTRS);
+        $this->capabilityList->add(MysqlCapability::CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA);
+        $this->capabilityList->add(MysqlCapability::CLIENT_CAN_HANDLE_EXPIRED_PASSWORDS);
+        $this->capabilityList->add(MysqlCapability::CLIENT_SESSION_TRACK);
+        $this->capabilityList->add(MysqlCapability::CLIENT_DEPRECATE_EOF);
+        */
+
         $host = null;
         $port = 3306;
-        $user = $uri->getUser();
-        $pass = $uri->getPass();
-        $database = null;
+        $this->options->username = $uri->getUser();
+        $this->options->password = $uri->getPass();
+        $this->options->database = null;
 
         foreach (explode(';', $uri->getPath()) as $item) {
             list ($key, $value) = explode('=', $item);
@@ -41,58 +80,54 @@ class Mysql implements IDataObjectDriver
             }
         }
 
-        $this->socket = new Socket();
-        $this->socket->setEndian(Endian::LittleEndian);
-        $this->socket->connect(EndPoint::create($host, $port));
+        $this->handle = new MysqlHandle(EndPoint::create($host, $port));
 
-        var_dump($this->socket->peek(102));
+        $handshake = Handshake::decode($this->handle->getPacket());
+        $this->capabilities &= $handshake->capabilities;
+        $this->options->characterSet = $handshake->characterSet;
+        $this->options->serverVersion = $handshake->serverVersion;
 
-        $this->readErrorPacket();
+        $this->serverResponse = new ServerResponse($this->options, $this->capabilities, $this->handle);
 
-        $protocolVersion = $this->socket->readUnsignedInt8();
-        $serverVersion = $this->socket->readNullTerminatedString();
-        $connectionId = $this->socket->readUnsignedInt32();
-        $authPluginData = $this->socket->read(8);
-        $this->socket->read(); // reserved
-        $capabilityFlags = $this->socket->readUnsignedInt16();
-        $characterSet = $this->socket->readUnsignedInt8();
-        $statusFlags = $this->socket->readUnsignedInt16();
-        $capabilityFlags |= $this->socket->readUnsignedInt16() << 16;
-        $authPluginName = null;
-
-        if ($capabilityFlags & MysqlCapability::CLIENT_PLUGIN_AUTH) {
-            $authPluginDataLen = $this->socket->readUnsignedInt8();
-
-            $this->socket->read(10); // reserved
-
-            if ($capabilityFlags & MysqlCapability::CLIENT_SECURE_CONNECTION) {
-                $authPluginData .= $this->socket->read(Math::max(13, $authPluginDataLen - 8));
-                $authPluginName = $this->socket->readNullTerminatedString();
-            }
-        } else {
-            $this->socket->read(10); // reserved
+        if ($this->capabilities & Capability::CLIENT_PLUGIN_AUTH) {
+            $this->authentication = Authentication::getPluginFromString(
+                $handshake->authPluginName,
+                $handshake->authPluginData
+            );
         }
 
-        var_dump($protocolVersion);
-        var_dump($serverVersion);
-        var_dump($connectionId);
-        var_dump($capabilityFlags);
-        var_dump($characterSet);
-        var_dump($statusFlags);
-        var_dump($authPluginData);
-        var_dump($authPluginName);
+        //print_r($handshake);
+        //print_r($handshake->capabilityList->getDebugArray());
 
-        $this->socket->writeUnsignedInt32(MysqlCapability::CLIENT_PROTOCOL_41);
-        $this->socket->writeUnsignedInt32(100);
-        $this->socket->writeUnsignedInt8($characterSet);
-        $this->socket->write(str_pad('', 23, "\x00"));
-        $this->socket->write($user . "\x00");
+        $response = new HandshakeResponse($this->options, $this->capabilities, $this->authentication);
+        $this->handle->sendPacket($response->getPayload());
+
+        if ($this->capabilities & Capability::CLIENT_PLUGIN_AUTH) {
+            //$this->authentication->handle($this->socket, AuthSwitchRequest::decode($this->getPacket()));
+            $authSwitchRequest = AuthSwitchRequest::decode($this->handle->getPacket());
+
+            if ($authSwitchRequest->isContinue()) {
+                $this->authentication->continuation($this->options, $this->handle);
+            } elseif ($authSwitchRequest->isRestart()) {
+                // TODO: renegotiate
+            }
+        }
+
+        $response = $this->serverResponse->decode($this->handle->getPacket()->payload, $this->capabilities);
+
+        if ($response instanceof OK) {
+            $this->handle->resetSequence();
+        }
     }
 
-    private function readErrorPacket(): void
+    public function exec(string $statement): int|false
     {
-        $header = $this->socket->readInt8();
-        $errorCode = $this->socket->readInt16();
-        $errorMessage = $this->socket->readNullTerminatedString();
+        $this->handle->sendCommand(new Query($statement));
+        $response = $this->serverResponse->decode($this->handle->getPacket()->payload);
+    }
+
+    public function __destruct()
+    {
+        $this->handle->sendCommand(new Quit());
     }
 }

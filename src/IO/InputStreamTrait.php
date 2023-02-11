@@ -10,7 +10,7 @@ trait InputStreamTrait
 
     abstract public function read(int $length = 1): string;
 
-    public function readNullTerminatedString(): string
+    public function readNullTerminated(): string
     {
         $string = '';
 

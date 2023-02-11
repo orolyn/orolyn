@@ -38,7 +38,7 @@ class Item implements Hashable
             return $this->value->equals($obj);
         }
 
-        return $this === $obj;
+        return $this->value === $obj;
     }
 
     /**
